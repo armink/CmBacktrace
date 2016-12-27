@@ -7,6 +7,7 @@
 
 #include <bsp.h>
 #include <stdio.h>
+#include <cm_backtrace.h>
 
 /*
 *********************************************************************************************************
@@ -88,8 +89,6 @@ static void GPIO_Configuration(void)
     GPIO_Init(GPIOF, &GPIO_InitStructure);
     GPIO_Init(GPIOG, &GPIO_InitStructure);
 
-
-
     /******************system run led*******************/
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
@@ -147,7 +146,6 @@ int fgetc(FILE *f)
    while(!(USART_GetFlagStatus(USART1, USART_FLAG_RXNE) == SET))
    {
    }
-  
     
    return (USART_ReceiveData(USART1));
 }
@@ -157,6 +155,7 @@ void assert_failed(u8* file, u32 line)
     /* User can add his own implementation to report the file name and line number,
      ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
     /* Infinite loop */
+    cm_backtrace_assert(__get_SP());
     printf("assert failed at %s:%d \n", file, line);
     while (1) {
     }

@@ -19,12 +19,12 @@ int main(void){
 //    fault_test_by_unalign();
     fault_test_by_div0();
     
-    _continue = 0;
-    while(_continue == 0) {
+    _continue = 1;
+    while(_continue == 1) {
         LED_RUN_ON;
         delay(1000000);
         LED_RUN_OFF;
-        delay(1000000);      
+        delay(1000000);
     }
     
     return 0;

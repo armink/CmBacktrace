@@ -58,7 +58,7 @@
 - 1、查看 `\demo` 目录下有没有合适自己的 Demo ，如有类似，则建议在其基础上修改
 - 2、明确操作系统/裸机平台及 CPU 平台
 - 3、将 `\src` 下的全部源文件添加至产品工程中，并保证源码目录被添加至头文件路径
-- 4、cmb_fault.s 汇编文件可以选择性添加至工程，添加后需要把项目原有的 `HardFault_Handler` 注释掉
+- 4、cmb_fault.s 汇编文件（[点击查看](https://github.com/armink/CmBacktrace/tree/master/cm_backtrace/fault_handler)）可以选择性添加至工程，添加后需要把项目原有的 `HardFault_Handler` 注释掉
 - 5、把 `cm_backtrace_init` 函数放在项目初始化地方执行
 - 6、将 `cm_backtrace_assert` 放在项目的断言函数中执行，具体使用方法参照下面的 API 说明
 - 7、如果第 4 步骤没有将 cmb_fault.s 汇编文件启用，则需要将 `cm_backtrace_fault` 放到故障处理函数（例如： `HardFault_Handler` ）中执行，具体使用方法参照下面的 API 说明
@@ -146,17 +146,24 @@ void cm_backtrace_fault(uint32_t fault_handler_lr, uint32_t fault_handler_sp)
 |fault_handler_lr                        |故障处理函数环境下的 LR 寄存器值|
 |fault_handler_sp                        |故障处理函数环境下的 SP 寄存器值|
 
-该函数可以在故障处理函数（例如： `HardFault_Handler`）中调用。另外，库本身提供了 `HardFault` 处理的汇编文件，会在故障时自动调用 `cm_backtrace_fault` 方法。所以移植时，最简单的方式就是直接使用该汇编文件（把 cmb_fault.s 添加到工程）。
+该函数可以在故障处理函数（例如： `HardFault_Handler`）中调用。另外，库本身提供了 `HardFault` 处理的汇编文件（[点击查看](https://github.com/armink/CmBacktrace/tree/master/cm_backtrace/fault_handler)，需根据自己编译器进行选择），会在故障时自动调用 `cm_backtrace_fault` 方法。所以移植时，最简单的方式就是直接使用该汇编文件。
 
-### 2.5 常见错误
+### 2.5 常见问题
 
-#### 编译出错，提示需要 C99 支持
+#### 2.5.1 编译出错，提示需要 C99 支持
 
-开启 C99 教程： [点击查看]()
+[点击查看教程：一步开启 Keil/IAR/GCC 的 C99 支持](https://github.com/armink/CmBacktrace/blob/master/docs/zh/enable%20c99%20for%20keil%20iar%20gcc.md)
 
-#### 无法准确查看到函数调用栈中的函数名及代码行号
-#### 无法准备获取到故障时的寄存器信息
-#### HardFault_Handler 重复定义
+#### 2.5.2 如何查看到函数调用栈中函数的具体名称及代码行号
+
+[点击查看教程：如何使用 addr2line 工具获取函数调用栈详细信息](https://github.com/armink/CmBacktrace/blob/master/docs/zh/how%20to%20use%20addr2line%20for%20call%20stack.md)
+
+#### 2.5.3 故障处理函数：HardFault_Handler 重复定义
+
+在使用了本库提供的 cmb_fault.s 汇编文件时，因为该汇编文件内部已经定义了 HardFault_Handler ，所以如果项目中还有其他地方定义了该函数，则会提示 HardFault_Handler 被重复定义的错误。此时有两种解决方法：
+
+- 1、注释/删除其他文件中定义的 `HardFault_Handler` 函数，仅保留 cmb_fault.s 中的；
+- 2、将 cmb_fault.s 移除工程，手动添加 `cm_backtrace_fault` 函数至现有的故障处理函数，但需要注意的是，务必 **保证该函数数入参的准备性** ，否则可能会导致故障诊断功能及堆栈打印功能无法正常运行。所以如果是新手，不推荐第二种解决方法。
 
 ### 2.6 许可
 

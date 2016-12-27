@@ -195,10 +195,10 @@ void cm_backtrace_init(const char *firmware_name, const char *hardware_ver, cons
     strncpy(sw_ver, software_ver, CMB_NAME_MAX);
 
 #if defined(__CC_ARM)
-    main_stack_start_addr = (uint32_t)&CODE_SECTION_START(CMB_CODE_SECTION_NAME);
-    main_stack_size = (uint32_t)&CODE_SECTION_END(CMB_CODE_SECTION_NAME) - main_stack_start_addr;
-    code_start_addr = (uint32_t)&CSTACK_BLOCK_START(CMB_CSTACK_BLOCK_NAME);
-    code_size = (uint32_t)&CSTACK_BLOCK_END(CMB_CSTACK_BLOCK_NAME) - code_start_addr;
+    main_stack_start_addr = (uint32_t)&CSTACK_BLOCK_START(CMB_CSTACK_BLOCK_NAME);
+    main_stack_size = (uint32_t)&CSTACK_BLOCK_END(CMB_CSTACK_BLOCK_NAME) - main_stack_start_addr;
+    code_start_addr = (uint32_t)&CODE_SECTION_START(CMB_CODE_SECTION_NAME);
+    code_size = (uint32_t)&CODE_SECTION_END(CMB_CODE_SECTION_NAME) - code_start_addr;
     //TODO ´ý²âÊÔ
 #elif defined(__ICCARM__)
     main_stack_start_addr = (uint32_t)__section_begin(CMB_CSTACK_BLOCK_NAME);

@@ -259,7 +259,7 @@ if (!(EXPR))                                                                   \
 
 /* ELF(Executable and Linking Format) file extension name for each compiler */
 #if defined(__CC_ARM)
-    #define CMB_ELF_FILE_EXTENSION_NAME          ".o"
+    #define CMB_ELF_FILE_EXTENSION_NAME          ".axf"
 #elif defined(__ICCARM__)
     #define CMB_ELF_FILE_EXTENSION_NAME          ".out"
 #elif defined(__GNUC__)
@@ -314,7 +314,7 @@ if (!(EXPR))                                                                   \
         bx lr
     }
     static __inline __asm uint32_t __get_SP(void) {
-        mrs r0, sp
+        mov r0, sp
         bx lr
     }
 #elif defined(__ICCARM__)

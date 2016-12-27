@@ -1,6 +1,8 @@
 # CmBacktrace: ARM Cortex-M 系列 MCU 错误追踪库
 
----
+[![GitHub release](https://img.shields.io/github/release/armink/CmBacktrace.svg)](https://github.com/armink/CmBacktrace/releases/latest)
+[![GitHub commits](https://img.shields.io/github/commits-since/armink/CmBacktrace/0.1.0.svg)](https://github.com/armink/CmBacktrace/0.1.0...master)
+[![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/armink/CmBacktrace/master/LICENSE)
 
 ## 0、CmBacktrace 是什么
 
@@ -46,7 +48,7 @@
 
 |目录|平台|链接|
 |:--|:--:|:--:|
-| `\demo\non-os\stm32f10x` |裸机 STM32 Cortex-M3|[点击查看](https://github.com/armink/CmBacktrace/tree/master/demo/non_os/stm32f10x)|
+| `\demo\non_os\stm32f10x` |裸机 STM32 Cortex-M3|[点击查看](https://github.com/armink/CmBacktrace/tree/master/demo/non_os/stm32f10x)|
 | `\demo\os\freertos\stm32f10x` |FreeRTOS STM32 Cortex-M3|[点击查看](https://github.com/armink/CmBacktrace/tree/master/demo/os/freertos/stm32f10x)|
 | `\demo\os\ucosii\stm32f20x` |UCOSII STM32 Cortex-M3|[点击查看](https://github.com/armink/CmBacktrace/tree/master/demo/os/ucosii/stm32f20x)|
 | `\demo\os\rtthread\stm32f4xx`|RT-Thread STM32 Cortex-M4|[点击查看](https://github.com/armink/CmBacktrace/tree/master/demo/os/rtthread/stm32f4xx)|
@@ -58,7 +60,7 @@
 - 1、查看 `\demo` 目录下有没有合适自己的 Demo ，如有类似，则建议在其基础上修改
 - 2、明确操作系统/裸机平台及 CPU 平台
 - 3、将 `\src` 下的全部源文件添加至产品工程中，并保证源码目录被添加至头文件路径
-- 4、cmb_fault.s 汇编文件可以选择性添加至工程，添加后一方面需要将文件中的需要将文件中的 `#if 0` 改为 `#if 1` ，另一方面需要把项目原有的 `HardFault_Handler` 注释掉
+- 4、cmb_fault.s 汇编文件可以选择性添加至工程，添加后需要把项目原有的 `HardFault_Handler` 注释掉
 - 5、把 `cm_backtrace_init` 函数放在项目初始化地方执行
 - 6、将 `cm_backtrace_assert` 放在项目的断言函数中执行，具体使用方法参照下面的 API 说明
 - 7、如果第 4 步骤没有将 cmb_fault.s 汇编文件启用，则需要将 `cm_backtrace_fault` 放到故障处理函数（例如： `HardFault_Handler` ）中执行，具体使用方法参照下面的 API 说明
@@ -90,8 +92,8 @@ void cm_backtrace_init(const char *firmware_name, const char *hardware_ver, cons
 |参数                                    |描述|
 |:-----                                  |:----|
 |firmware_name                           |固件名称，需与编译器生成的固件名称对应|
-|hardware_ver                            |硬件版本号|
-|software_ver                            |软件版本号|
+|hardware_ver                            |固件对应的硬件版本号|
+|software_ver                            |固件的软件版本号|
 
 > **注意** ：以上入参将会在断言或故障时输出，主要起了追溯的作用
 
@@ -146,7 +148,7 @@ void cm_backtrace_fault(uint32_t fault_handler_lr, uint32_t fault_handler_sp)
 |fault_handler_lr                        |故障处理函数环境下的 LR 寄存器值|
 |fault_handler_sp                        |故障处理函数环境下的 SP 寄存器值|
 
-该函数可以在故障处理函数（例如： `HardFault_Handler`）中调用。另外，库本身提供了 `HardFault` 处理的汇编文件，会在故障时自动调用 `cm_backtrace_fault` 方法。所以移植时，最简单的方式就是直接使用该汇编文件（把 cmb_fault.s 添加到工程，并修改 `#if 0` 为 `#if 1` ）。
+该函数可以在故障处理函数（例如： `HardFault_Handler`）中调用。另外，库本身提供了 `HardFault` 处理的汇编文件，会在故障时自动调用 `cm_backtrace_fault` 方法。所以移植时，最简单的方式就是直接使用该汇编文件（把 cmb_fault.s 添加到工程）。
 
 ### 2.5 常见错误
 

@@ -177,8 +177,14 @@ static bool init_ok = false;
 static char call_stack_info[CMB_CALL_STACK_MAX_DEPTH * (8 + 1)] = { 0 };
 static bool on_fault = false;
 static struct cmb_hard_fault_regs regs;
-static bool on_thread_before_fault = false;
+
+#if (CMB_CPU_PLATFORM_TYPE == CMB_CPU_ARM_CORTEX_M4) || (CMB_CPU_PLATFORM_TYPE == CMB_CPU_ARM_CORTEX_M7)
 static bool statck_has_fpu_regs = false;
+#endif
+
+#ifdef CMB_USING_OS_PLATFORM
+static bool on_thread_before_fault = false;
+#endif
 
 /**
  * library initialize
@@ -276,6 +282,7 @@ static const char *get_cur_thread_name(void) {
 #endif
 }
 
+#ifdef CMB_USING_DUMP_STACK_INFO
 /**
  * dump current thread stack information
  */
@@ -286,8 +293,10 @@ static void dump_cur_thread_stack(uint32_t stack_start_addr, size_t stack_size, 
     }
     cmb_println("====================================");
 }
+#endif /* CMB_USING_DUMP_STACK_INFO */
 #endif /* CMB_USING_OS_PLATFORM */
 
+#ifdef CMB_USING_DUMP_STACK_INFO
 /**
  * dump current main stack information
  */
@@ -298,6 +307,7 @@ static void dump_main_stack(uint32_t stack_start_addr, size_t stack_size, uint32
     }
     cmb_println("====================================");
 }
+#endif /* CMB_USING_DUMP_STACK_INFO */
 
 /**
  * backtrace function call stack
@@ -309,22 +319,21 @@ static void dump_main_stack(uint32_t stack_start_addr, size_t stack_size, uint32
  * @return depth
  */
 size_t cm_backtrace_call_stack(uint32_t *buffer, size_t size, uint32_t sp) {
-    uint32_t stack_start_addr = main_stack_start_addr, stack_size = main_stack_size, cur_stack_pointer;
+    uint32_t stack_start_addr = main_stack_start_addr, stack_size = main_stack_size;
     size_t depth = 0;
 
     if (on_fault) {
         /* first depth is PC */
         buffer[depth++] = regs.saved.pc;
+
+#ifdef CMB_USING_OS_PLATFORM
         /* program is running on thread before fault */
         if (on_thread_before_fault) {
             get_cur_thread_stack_info(sp, &stack_start_addr, &stack_size);
         }
     } else {
-        cur_stack_pointer = __get_SP();
-
-#ifdef CMB_USING_OS_PLATFORM
         /* OS environment */
-        if (cur_stack_pointer == __get_PSP()) {
+        if (__get_SP() == __get_PSP()) {
             get_cur_thread_stack_info(sp, &stack_start_addr, &stack_size);
         }
 #endif /* CMB_USING_OS_PLATFORM */
@@ -373,29 +382,43 @@ static void print_call_stack(uint32_t sp) {
  * @param sp the stack pointer when on assert occurred
  */
 void cm_backtrace_assert(uint32_t sp) {
-    uint32_t stack_start_addr = main_stack_start_addr, stack_size = main_stack_size, cur_stack_pointer;
-
     CMB_ASSERT(init_ok);
 
-    cur_stack_pointer = __get_SP();
+#ifdef CMB_USING_OS_PLATFORM
+    uint32_t cur_stack_pointer = __get_SP();
+#endif
+
+    cmb_println("");
     cm_backtrace_firmware_info();
 
-#ifdef CMB_USING_DUMP_STACK_INFO
 #ifdef CMB_USING_OS_PLATFORM
     /* OS environment */
     if (cur_stack_pointer == __get_MSP()) {
         cmb_println(print_info[PRINT_ASSERT_ON_HANDLER]);
-        dump_main_stack(stack_start_addr, stack_size, (uint32_t *) sp);
+
+#ifdef CMB_USING_DUMP_STACK_INFO
+        dump_main_stack(main_stack_start_addr, main_stack_size, (uint32_t *) sp);
+#endif /* CMB_USING_DUMP_STACK_INFO */
+
     } else if (cur_stack_pointer == __get_PSP()) {
         cmb_println(print_info[PRINT_ASSERT_ON_THREAD], get_cur_thread_name());
+
+#ifdef CMB_USING_DUMP_STACK_INFO
+        uint32_t stack_start_addr, stack_size;
         get_cur_thread_stack_info(sp, &stack_start_addr, &stack_size);
         dump_cur_thread_stack(stack_start_addr, stack_size, (uint32_t *) sp);
-    }
-#else
-    /* bare metal(no OS) environment */
-    dump_main_stack();
-#endif /* CMB_USING_OS_PLATFORM */
 #endif /* CMB_USING_DUMP_STACK_INFO */
+
+    }
+
+#else
+
+    /* bare metal(no OS) environment */
+#ifdef CMB_USING_DUMP_STACK_INFO
+    dump_main_stack(main_stack_start_addr, main_stack_size, (uint32_t *) sp);
+#endif /* CMB_USING_DUMP_STACK_INFO */
+
+#endif /* CMB_USING_OS_PLATFORM */
 
     print_call_stack(sp);
 }
@@ -507,12 +530,14 @@ static void fault_diagnosis(void) {
 }
 #endif /* (CMB_CPU_PLATFORM_TYPE != CMB_CPU_ARM_CORTEX_M0) */
 
+#if (CMB_CPU_PLATFORM_TYPE == CMB_CPU_ARM_CORTEX_M4) || (CMB_CPU_PLATFORM_TYPE == CMB_CPU_ARM_CORTEX_M7)
 static uint32_t statck_del_fpu_regs(uint32_t fault_handler_lr, uint32_t sp) {
     statck_has_fpu_regs = (fault_handler_lr & (1UL << 4)) == 0 ? true : false;
 
     /* the stack has S0~S15 and FPSCR registers when statck_has_fpu_regs is true, double word align */
     return statck_has_fpu_regs == true ? sp + sizeof(size_t) * 18 : sp;
 }
+#endif
 
 /**
  * backtrace for fault
@@ -522,8 +547,7 @@ static uint32_t statck_del_fpu_regs(uint32_t fault_handler_lr, uint32_t sp) {
  * @param fault_handler_sp the stack pointer on fault handler
  */
 void cm_backtrace_fault(uint32_t fault_handler_lr, uint32_t fault_handler_sp) {
-    uint32_t stack_start_addr = main_stack_start_addr, stack_size = main_stack_size, stack_pointer =
-            fault_handler_sp, saved_regs_addr = stack_pointer;
+    uint32_t stack_pointer = fault_handler_sp, saved_regs_addr = stack_pointer;
     const char *regs_name[] = { "R0 ", "R1 ", "R2 ", "R3 ", "R12", "LR ", "PC ", "PSR" };
 
     CMB_ASSERT(init_ok);
@@ -531,6 +555,8 @@ void cm_backtrace_fault(uint32_t fault_handler_lr, uint32_t fault_handler_sp) {
     CMB_ASSERT(!on_fault);
 
     on_fault = true;
+
+    cmb_println("");
     cm_backtrace_firmware_info();
 
     /* delete saved  R0~R3, R12, LR, PC, xPSR registers address */
@@ -541,6 +567,7 @@ void cm_backtrace_fault(uint32_t fault_handler_lr, uint32_t fault_handler_sp) {
 #endif
 
 #ifdef CMB_USING_DUMP_STACK_INFO
+    uint32_t stack_start_addr = main_stack_start_addr, stack_size = main_stack_size;
 #ifdef CMB_USING_OS_PLATFORM
     on_thread_before_fault = fault_handler_lr & (1UL << 2);
     /* check which stack was used before (MSP or PSP) */

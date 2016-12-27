@@ -37,7 +37,7 @@
     REQUIRE8
     PRESERVE8
 
-#if 0
+#if 1
 ; NOTE: If use this file's HardFault_Handler, please comments the HardFault_Handler code on other file.
     IMPORT cm_backtrace_fault
     EXPORT HardFault_Handler
@@ -46,8 +46,9 @@ HardFault_Handler:
     MOV     r0, lr                  ; get lr
     MOV     r1, sp                  ; get stack pointer (current is MSP)
     BL      cm_backtrace_fault
+
+Fault_loop
+    BL      Fault_loop              ;while(1)
 #endif
 
     END
-
-

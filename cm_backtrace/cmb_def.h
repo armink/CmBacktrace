@@ -31,6 +31,7 @@
 
 #include <cmb_cfg.h>
 #include <stdint.h>
+#include <stdlib.h>
 
 /* library software version number */
 #define CMB_SW_VERSION                "0.1.0"
@@ -48,9 +49,9 @@
 #define CMB_PRINT_LANGUAGE_ENGLISH     0
 #define CMB_PRINT_LANUUAGE_CHINESE     1
 
-/* name max length, default size: 16 */
+/* name max length, default size: 32 */
 #ifndef CMB_NAME_MAX
-#define CMB_NAME_MAX                   16
+#define CMB_NAME_MAX                   32
 #endif
 
 /* print information language, default is English */
@@ -284,23 +285,23 @@ if (!(EXPR))                                                                   \
 #elif defined(CMB_USING_OS_PLATFORM)
     #if !defined(CMB_OS_PLATFORM_TYPE)
         #error "CMB_OS_PLATFORM_TYPE isn't defined in 'cmb_cfg.h'"
-    #endif
+    #endif /* !defined(CMB_OS_PLATFORM_TYPE) */
+    #if (CMB_OS_PLATFORM_TYPE == CMB_OS_PLATFORM_RTT)
+        #include <rtthread.h>
+    #elif (CMB_OS_PLATFORM_TYPE == CMB_OS_PLATFORM_UCOSII)
+        #include <ucos_ii.h>
+        //TODO ´ý²âÊÔ
+    #elif (CMB_OS_PLATFORM_TYPE == CMB_OS_PLATFORM_UCOSIII)
+        #include <os.h>
+        //TODO ´ý²âÊÔ
+    #elif (CMB_OS_PLATFORM_TYPE == CMB_OS_PLATFORM_FREERTOS)
+        #error "not implemented, I hope you can do this"
+        //TODO ´ýÊµÏÖ
+    #else
+        #error "not supported OS type"
+    #endif /* (CMB_OS_PLATFORM_TYPE == CMB_OS_PLATFORM_RTT) */
 #endif /* (defined(CMB_USING_BARE_METAL_PLATFORM) && defined(CMB_USING_OS_PLATFORM)) */
 
-#if (CMB_OS_PLATFORM_TYPE == CMB_OS_PLATFORM_RTT)
-    #include <rtthread.h>
-#elif (CMB_OS_PLATFORM_TYPE == CMB_OS_PLATFORM_UCOSII)
-    #include <ucos_ii.h>
-    //TODO ´ý²âÊÔ
-#elif (CMB_OS_PLATFORM_TYPE == CMB_OS_PLATFORM_UCOSIII)
-    #include <os.h>
-    //TODO ´ý²âÊÔ
-#elif (CMB_OS_PLATFORM_TYPE == CMB_OS_PLATFORM_FREERTOS)
-    #error "not yet implemented, I hope you can done this"
-    //TODO ´ýÊµÏÖ
-#else
-    #error "not supported OS type"
-#endif
 
 /* include or export for supported __get_MSP, __get_PSP, __get_SP function */
 #if defined(__CC_ARM)

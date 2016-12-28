@@ -156,11 +156,11 @@ void cm_backtrace_fault(uint32_t fault_handler_lr, uint32_t fault_handler_sp)
 
 #### 2.5.1 编译出错，提示需要 C99 支持
 
-[点击查看教程：一步开启 Keil/IAR/GCC 的 C99 支持](https://github.com/armink/CmBacktrace/blob/master/docs/zh/enable%20c99%20for%20keil%20iar%20gcc.md)
+[点击查看教程：一步开启 Keil/IAR/GCC 的 C99 支持](https://github.com/armink/CmBacktrace/blob/master/docs/zh/enable_c99_for_keil_iar_gcc.md)
 
 #### 2.5.2 如何查看到函数调用栈中函数的具体名称及代码行号
 
-[点击查看教程：如何使用 addr2line 工具获取函数调用栈详细信息](https://github.com/armink/CmBacktrace/blob/master/docs/zh/how%20to%20use%20addr2line%20for%20call%20stack.md)
+[点击查看教程：如何使用 addr2line 工具获取函数调用栈详细信息](https://github.com/armink/CmBacktrace/blob/master/docs/zh/how_to_use_addr2line_for_call_stack.md)
 
 #### 2.5.3 故障处理函数：HardFault_Handler 重复定义
 

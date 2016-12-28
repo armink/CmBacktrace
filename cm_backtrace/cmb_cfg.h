@@ -29,19 +29,18 @@
 #ifndef _CMB_CFG_H_
 #define _CMB_CFG_H_
 
-#include <elog.h>
-
-#define cmb_println(...)               elog_e("cmb", __VA_ARGS__)
-/* 使用裸机平台 */
-//#define CMB_USING_BARE_METAL_PLATFORM
-/* 使用操作系统平台 */
-#define CMB_USING_OS_PLATFORM
-/* 操作系统平台类型 */
-#define CMB_OS_PLATFORM_TYPE           CMB_OS_PLATFORM_RTT
-/* CPU 平台类型 */
-#define CMB_CPU_PLATFORM_TYPE          CMB_CPU_ARM_CORTEX_M4
-/* 启用 dump 栈信息功能 */
-#define CMB_USING_DUMP_STACK_INFO
-/* 打印信息的语言 */
-#define CMB_PRINT_LANGUAGE             CMB_PRINT_LANUUAGE_CHINESE
+/* print line, must config by user */
+#define cmb_println(...)               /* e.g., printf(__VA_ARGS__);printf("\r\n") */
+/* enable bare metal(no OS) platform */
+/* #define CMB_USING_BARE_METAL_PLATFORM */
+/* enable OS platform */
+/* #define CMB_USING_OS_PLATFORM */
+/* OS platform type, must config when CMB_USING_OS_PLATFORM is enable */
+/* #define CMB_OS_PLATFORM_TYPE           CMB_OS_PLATFORM_RTT or CMB_OS_PLATFORM_UCOSII or CMB_OS_PLATFORM_UCOSIII or CMB_OS_PLATFORM_FREERTOS */
+/* cpu platform type, must config by user */
+#define CMB_CPU_PLATFORM_TYPE          /* CMB_CPU_ARM_CORTEX_M0 or CMB_CPU_ARM_CORTEX_M3 or CMB_CPU_ARM_CORTEX_M4 or CMB_CPU_ARM_CORTEX_M7 */
+/* enable dump stack infomation */
+/* #define CMB_USING_DUMP_STACK_INFO */
+/* language of print information */
+/* #define CMB_PRINT_LANGUAGE             CMB_PRINT_LANGUAGE_ENGLISH(default) or CMB_PRINT_LANUUAGE_CHINESE */
 #endif /* _CMB_CFG_H_ */

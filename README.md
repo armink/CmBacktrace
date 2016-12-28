@@ -36,11 +36,15 @@
 
 ### 2.1 演示
 
-- 制造除零异常
-- 查看错误诊断信息
-- 查看函数调用栈
-- 定位错误代码
-- 检查出错代码
+该演示分如下几个步骤：
+
+- 1、制造除零异常（[IAR 工程，点击查看源码](https://github.com/armink/CmBacktrace/tree/master/demo/non_os/stm32f10x/app/src)）
+- 2、查看错误诊断信息
+- 3、查看函数调用栈基本信息
+- 4、通过命令行工具进入项目工程存放可执行文件的路径
+- 5、使用 addr2line 命令，查看函数调用栈详细信息，并定位错误代码
+
+[![cm_backtrace_demo](https://raw.githubusercontent.com/armink/CmBacktrace/master/docs/zh/images/cm_backtrace_demo.gif)](https://github.com/armink/CmBacktrace)
 
 ### 2.2 Demo
 

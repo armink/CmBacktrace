@@ -39,7 +39,7 @@
 /* #define CMB_OS_PLATFORM_TYPE           CMB_OS_PLATFORM_RTT or CMB_OS_PLATFORM_UCOSII or CMB_OS_PLATFORM_UCOSIII or CMB_OS_PLATFORM_FREERTOS */
 /* cpu platform type, must config by user */
 #define CMB_CPU_PLATFORM_TYPE          /* CMB_CPU_ARM_CORTEX_M0 or CMB_CPU_ARM_CORTEX_M3 or CMB_CPU_ARM_CORTEX_M4 or CMB_CPU_ARM_CORTEX_M7 */
-/* enable dump stack infomation */
+/* enable dump stack information */
 /* #define CMB_USING_DUMP_STACK_INFO */
 /* language of print information */
 /* #define CMB_PRINT_LANGUAGE             CMB_PRINT_LANGUAGE_ENGLISH(default) or CMB_PRINT_LANUUAGE_CHINESE */

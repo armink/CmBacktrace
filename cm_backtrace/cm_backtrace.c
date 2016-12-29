@@ -45,7 +45,6 @@
     extern const int CODE_SECTION_END(CMB_CODE_SECTION_NAME);
     extern const int CSTACK_BLOCK_START(CMB_CSTACK_BLOCK_NAME);
     extern const int CSTACK_BLOCK_END(CMB_CSTACK_BLOCK_NAME);
-    //TODO ¥˝≤‚ ‘
 #elif defined(__ICCARM__)
     #pragma section=CMB_CSTACK_BLOCK_NAME
     #pragma section=CMB_CODE_SECTION_NAME
@@ -199,7 +198,6 @@ void cm_backtrace_init(const char *firmware_name, const char *hardware_ver, cons
     main_stack_size = (uint32_t)&CSTACK_BLOCK_END(CMB_CSTACK_BLOCK_NAME) - main_stack_start_addr;
     code_start_addr = (uint32_t)&CODE_SECTION_START(CMB_CODE_SECTION_NAME);
     code_size = (uint32_t)&CODE_SECTION_END(CMB_CODE_SECTION_NAME) - code_start_addr;
-    //TODO ¥˝≤‚ ‘
 #elif defined(__ICCARM__)
     main_stack_start_addr = (uint32_t)__section_begin(CMB_CSTACK_BLOCK_NAME);
     main_stack_size = (uint32_t)__section_end(CMB_CSTACK_BLOCK_NAME) - main_stack_start_addr;
@@ -244,7 +242,7 @@ static void get_cur_thread_stack_info(uint32_t sp, uint32_t *start_addr, size_t 
     *start_addr = (uint32_t) OSTCBCur->OSTCBStkBase;
     *size = (sp + OSTCBCur->OSTCBStkUsed) - *start_addr;
 #else
-        #error "OS_TASK_PROFILE_EN isn't enable in 'OS_CFG.H'"
+     #error "OS_TASK_PROFILE_EN isn't enable in 'OS_CFG.H'"
 #endif /* OS_TASK_PROFILE_EN > 0 */
 
     //TODO ≤‚ ‘
@@ -550,6 +548,10 @@ void cm_backtrace_fault(uint32_t fault_handler_lr, uint32_t fault_handler_sp) {
     uint32_t stack_pointer = fault_handler_sp, saved_regs_addr = stack_pointer;
     const char *regs_name[] = { "R0 ", "R1 ", "R2 ", "R3 ", "R12", "LR ", "PC ", "PSR" };
 
+#ifdef CMB_USING_DUMP_STACK_INFO
+    uint32_t stack_start_addr = main_stack_start_addr, stack_size = main_stack_size;
+#endif
+
     CMB_ASSERT(init_ok);
     /* only call once */
     CMB_ASSERT(!on_fault);
@@ -559,39 +561,42 @@ void cm_backtrace_fault(uint32_t fault_handler_lr, uint32_t fault_handler_sp) {
     cmb_println("");
     cm_backtrace_firmware_info();
 
-    /* delete saved  R0~R3, R12, LR, PC, xPSR registers address */
-    stack_pointer += sizeof(size_t) * 8;
-
-#if (CMB_CPU_PLATFORM_TYPE == CMB_CPU_ARM_CORTEX_M4) || (CMB_CPU_PLATFORM_TYPE == CMB_CPU_ARM_CORTEX_M7)
-    stack_pointer = statck_del_fpu_regs(fault_handler_lr, stack_pointer);
-#endif
-
-#ifdef CMB_USING_DUMP_STACK_INFO
-    uint32_t stack_start_addr = main_stack_start_addr, stack_size = main_stack_size;
 #ifdef CMB_USING_OS_PLATFORM
     on_thread_before_fault = fault_handler_lr & (1UL << 2);
     /* check which stack was used before (MSP or PSP) */
     if (on_thread_before_fault) {
         cmb_println(print_info[PRINT_FAULT_ON_THREAD], get_cur_thread_name());
         saved_regs_addr = stack_pointer = __get_PSP();
+
+#ifdef CMB_USING_DUMP_STACK_INFO
         get_cur_thread_stack_info(stack_pointer, &stack_start_addr, &stack_size);
-
-        /* delete saved R0~R3, R12, LR,PC,xPSR registers space */
-        stack_pointer += sizeof(size_t) * 8;
-
-#if (CMB_CPU_PLATFORM_TYPE == CMB_CPU_ARM_CORTEX_M4) || (CMB_CPU_PLATFORM_TYPE == CMB_CPU_ARM_CORTEX_M7)
-        stack_pointer = statck_del_fpu_regs(fault_handler_lr, stack_pointer);
-#endif
-
-        dump_cur_thread_stack(stack_start_addr, stack_size, (uint32_t *) stack_pointer);
+#endif /* CMB_USING_DUMP_STACK_INFO */
 
     } else {
         cmb_println(print_info[PRINT_FAULT_ON_HANDLER]);
-        dump_main_stack(stack_start_addr, stack_size, (uint32_t *) stack_pointer);
     }
 #else
     /* bare metal(no OS) environment */
     cmb_println(print_info[PRINT_FAULT_ON_HANDLER]);
+#endif /* CMB_USING_OS_PLATFORM */
+
+    /* delete saved R0~R3, R12, LR,PC,xPSR registers space */
+    stack_pointer += sizeof(size_t) * 8;
+
+#if (CMB_CPU_PLATFORM_TYPE == CMB_CPU_ARM_CORTEX_M4) || (CMB_CPU_PLATFORM_TYPE == CMB_CPU_ARM_CORTEX_M7)
+    stack_pointer = statck_del_fpu_regs(fault_handler_lr, stack_pointer);
+#endif /* (CMB_CPU_PLATFORM_TYPE == CMB_CPU_ARM_CORTEX_M4) || (CMB_CPU_PLATFORM_TYPE == CMB_CPU_ARM_CORTEX_M7) */
+
+    /* dump stack information */
+#ifdef CMB_USING_DUMP_STACK_INFO
+#ifdef CMB_USING_OS_PLATFORM
+    if (on_thread_before_fault) {
+        dump_cur_thread_stack(stack_start_addr, stack_size, (uint32_t *) stack_pointer);
+    } else {
+        dump_main_stack(stack_start_addr, stack_size, (uint32_t *) stack_pointer);
+    }
+#else
+    /* bare metal(no OS) environment */
     dump_main_stack(stack_start_addr, stack_size, (uint32_t *) stack_pointer);
 #endif /* CMB_USING_OS_PLATFORM */
 #endif /* CMB_USING_DUMP_STACK_INFO */

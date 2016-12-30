@@ -317,12 +317,20 @@ static void dump_main_stack(uint32_t stack_start_addr, size_t stack_size, uint32
  * @return depth
  */
 size_t cm_backtrace_call_stack(uint32_t *buffer, size_t size, uint32_t sp) {
-    uint32_t stack_start_addr = main_stack_start_addr, stack_size = main_stack_size;
+    uint32_t stack_start_addr = main_stack_start_addr, stack_size = main_stack_size, pc;
     size_t depth = 0;
+    bool regs_saved_lr_is_valid = false;
 
     if (on_fault) {
         /* first depth is PC */
         buffer[depth++] = regs.saved.pc;
+        /* second depth is from LR, so need decrease a word to PC */
+        pc = regs.saved.lr - sizeof(size_t);
+        if ((pc >= code_start_addr) && (pc <= code_start_addr + code_size) && (depth < CMB_CALL_STACK_MAX_DEPTH)
+                && (depth < size)) {
+            buffer[depth++] = pc;
+            regs_saved_lr_is_valid = true;
+        }
 
 #ifdef CMB_USING_OS_PLATFORM
         /* program is running on thread before fault */
@@ -340,10 +348,15 @@ size_t cm_backtrace_call_stack(uint32_t *buffer, size_t size, uint32_t sp) {
 
     /* copy called function address */
     for (; sp < stack_start_addr + stack_size; sp += sizeof(size_t)) {
-        if ((*((uint32_t *) sp) >= code_start_addr) && (*((uint32_t *) sp) <= code_start_addr + code_size)
-                && (depth < CMB_CALL_STACK_MAX_DEPTH) && (depth < size)) {
-            /* this get value maybe LR, so need decrease a word to PC */
-            buffer[depth++] = *((uint32_t *) sp) - sizeof(size_t);
+        /* the *sp value may be LR, so need decrease a word to PC */
+        pc = *((uint32_t *) sp) - sizeof(size_t);
+        if ((pc >= code_start_addr) && (pc <= code_start_addr + code_size) && (depth < CMB_CALL_STACK_MAX_DEPTH)
+                && (depth < size)) {
+            /* the second depth function may be already saved, so need ignore repeat */
+            if ((depth == 2) && regs_saved_lr_is_valid && (pc == buffer[1])) {
+                continue;
+            }
+            buffer[depth++] = pc;
         }
     }
 

@@ -4,13 +4,13 @@
 
 ## 0、CmBacktrace 是什么
 
-[CmBacktrace](https://github.com/armink/CmBacktrace) （Cortex Microcontroller Backtrace）是一款开源的针对 ARM Cortex-M 系列 MCU 的错误追踪库。主要特性如下：
+[CmBacktrace](https://github.com/armink/CmBacktrace) （Cortex Microcontroller Backtrace）是一款针对 ARM Cortex-M 系列 MCU 的错误代码自动追踪、定位，错误原因自动分析的开源库。主要特性如下：
 
-- 追踪的对象包括：
+- 支持的错误包括：
     - 断言（assert）
     - 故障（Hard Fault, Memory Management Fault, Bus Fault, Usage Fault, Debug Fault）
-- **自动诊断** 故障原因，无需手动分析故障寄存器；
-- 输出断言及故障现场时的 **函数调用栈**（需配合 addr2line 工具进行精确定位），定位问题代码更加快捷、精准。也可以在正常状态下使用该库，获取当时的函数调用栈；
+- 故障原因 **自动诊断** ：可在故障发生时，自动分析出故障的原因，定位发生故障的代码位置，而无需再手动分析繁杂的故障寄存器；
+- 输出错误现场的 **函数调用栈**（需配合 addr2line 工具进行精确定位），还原发生错误时的现场信息，定位问题代码位置、逻辑更加快捷、精准。也可以在正常状态下使用该库，获取当前的函数调用栈；
 - 支持 裸机 及以下操作系统平台：
     - [RT-Thread](http://www.rt-thread.org/)
     - UCOS
@@ -24,7 +24,12 @@
 
 **入门新人** ：对于从 C51 、MSP430 等简单单片机转而使用更加复杂的 ARM  新人来说，时不时出现的 "hard falut" 死机会让新人瞬间懵掉。定位错误的方法也往往是连接上仿真器，一步步 F10/F11 单步，定位到具体的错误代码，再去猜测、排除、推敲错误原因，这种过程十分痛苦。
 
-**熟练老手** ：慢慢的大家知道可以通过故障寄存器信息来定位故障原因及故障代码地址，虽然这样能解决一小部分问题，但是重复的、繁琐的分析过程也会耽误很多时间。而且对于一些复杂问题，只依靠代码地址是无法解决的，必须得还原错误现场的函数调用逻辑关系。此时产品可能无法连接仿真器或者即便连接仿真器，问题也很难被复现，所以定位这类问题就显得难上加难。
+**熟练老手** ：慢慢的大家知道可以通过故障寄存器信息来定位故障原因及故障代码地址，虽然这样能解决一小部分问题，但是重复的、繁琐的分析过程也会耽误很多时间。而且对于一些复杂问题，只依靠代码地址是无法解决的，必须得还原错误现场的函数调用逻辑关系。虽然连接仿真器可以查看到的函数调用栈，但故障状态下是无法显示的，所以还是得一步步 F10/F11 单步去定位错误代码的位置。另外，还有两种场景，
+
+- 1、很多产品真机调试时必须断开仿真器
+- 2、问题确实存在，但是极难被重现
+
+所以定位这类问题就显得难上加难。
 
 **使用本库** ：上述所有问题都迎刃而解，可以将错误信息输出到控制台上，还可以将错误信息使用 [EasyFlash](https://github.com/armink/EasyFlash) 的 Log 功能保存至 Flash 中，设备死机后重启依然能够读取上次的错误信息。CmBacktrace 输出的信息包括函数调用栈、故障诊断结果、堆栈、故障寄存器及产品固件信息，极大的提升了错误定位的效率及准确性。
 
@@ -38,7 +43,7 @@
 
 该演示分如下几个步骤：
 
-- 1、制造除零异常（[IAR 工程，点击查看源码](https://github.com/armink/CmBacktrace/tree/master/demo/non_os/stm32f10x/app/src)）
+- 1、制造除零异常（[IAR 工程，点击查看源码](https://github.com/armink/CmBacktrace/tree/master/demos/non_os/stm32f10x/app/src)）
 - 2、查看错误诊断信息
 - 3、查看函数调用栈基本信息
 - 4、通过命令行工具进入项目工程存放可执行文件的路径
@@ -50,16 +55,16 @@
 
 |目录|平台|链接|
 |:--|:--:|:--:|
-| `\demo\non_os\stm32f10x` |裸机 STM32 Cortex-M3|[点击查看](https://github.com/armink/CmBacktrace/tree/master/demo/non_os/stm32f10x)|
-| `\demo\os\freertos\stm32f10x` |FreeRTOS STM32 Cortex-M3|[点击查看](https://github.com/armink/CmBacktrace/tree/master/demo/os/freertos/stm32f10x)|
-| `\demo\os\ucosii\stm32f20x` |UCOSII STM32 Cortex-M3|[点击查看](https://github.com/armink/CmBacktrace/tree/master/demo/os/ucosii/stm32f20x)|
-| `\demo\os\rtthread\stm32f4xx`|RT-Thread STM32 Cortex-M4|[点击查看](https://github.com/armink/CmBacktrace/tree/master/demo/os/rtthread/stm32f4xx)|
+| `\demos\non_os\stm32f10x` |裸机 STM32 Cortex-M3|[点击查看](https://github.com/armink/CmBacktrace/tree/master/demos/non_os/stm32f10x)|
+| `\demos\os\freertos\stm32f10x` |FreeRTOS STM32 Cortex-M3|[点击查看](https://github.com/armink/CmBacktrace/tree/master/demos/os/freertos/stm32f10x)|
+| `\demos\os\ucosii\stm32f20x` |UCOSII STM32 Cortex-M3|[点击查看](https://github.com/armink/CmBacktrace/tree/master/demos/os/ucosii/stm32f20x)|
+| `\demos\os\rtthread\stm32f4xx`|RT-Thread STM32 Cortex-M4|[点击查看](https://github.com/armink/CmBacktrace/tree/master/demos/os/rtthread/stm32f4xx)|
 
 ### 2.3 移植说明
 
 #### 2.3.1 准备工作
 
-- 1、查看 `\demo` 目录下有没有合适自己的 Demo ，如有类似，则建议在其基础上修改
+- 1、查看 `\demos` 目录下有没有合适自己的 Demo ，如有类似，则建议在其基础上修改
 - 2、明确操作系统/裸机平台及 CPU 平台
 - 3、将 `\src` 下的全部源文件添加至产品工程中，并保证源码目录被添加至头文件路径
 - 4、cmb_fault.s 汇编文件（[点击查看](https://github.com/armink/CmBacktrace/tree/master/cm_backtrace/fault_handler)）可以选择性添加至工程，添加后需要把项目原有的 `HardFault_Handler` 注释掉

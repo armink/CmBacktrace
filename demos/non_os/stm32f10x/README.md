@@ -35,7 +35,7 @@ Show more call stack info by run: addr2line -e CmBacktrace.out -a -f 08000a60 08
 
 ## STEP 4
 
-打开电脑上的命令行工具，进入项目工程的可执行文件所在路径（Keil 一般在 `Output` 下，可执行文件后缀 `.axf`；IAR 一般在 ` Exe` 下，可执行文件后缀 `.out`），将 STEP 3 最后输出的 `addr2line -e CmBacktrace.out -a -f 08000a60 08000141 0800313f` 拷贝至控制台，并执行（[点击查看 addr2line 工具的使用教程](https://github.com/armink/CmBacktrace/blob/master/docs/zh/how_to_use_addr2line_for_call_stack.md)，可看到类似如下，包含函数名称及代码行号的函数调用栈信息：
+打开电脑上的命令行工具，进入项目工程的可执行文件所在路径（Keil 一般在 `Output` 下，可执行文件后缀 `.axf`；IAR 一般在 ` Exe` 下，可执行文件后缀 `.out`），将 STEP 3 最后输出的 `addr2line -e CmBacktrace.out -a -f 08000a60 08000141 0800313f` 拷贝至控制台，并执行（[点击查看 addr2line 工具的使用教程](https://github.com/armink/CmBacktrace/blob/master/docs/zh/how_to_use_addr2line_for_call_stack.md)），可看到类似如下，包含函数名称及代码行号的函数调用栈信息：
 
 ```
 D:\Program\STM32\CmBacktrace\demo\non_os\stm32f10x\EWARM\stm32f103xE\Exe>addr2line -e CmBacktrace.out -a -f 08000a60 08000141 0800313f

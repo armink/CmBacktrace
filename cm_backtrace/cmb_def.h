@@ -34,7 +34,7 @@
 #include <stdlib.h>
 
 /* library software version number */
-#define CMB_SW_VERSION                "0.1.0"
+#define CMB_SW_VERSION                "0.1.1"
 
 #define CMB_CPU_ARM_CORTEX_M0          0
 #define CMB_CPU_ARM_CORTEX_M3          1
@@ -79,14 +79,21 @@
     #define CMB_CODE_SECTION_NAME          ".text"
     #endif
 #elif defined(__GNUC__)
-    //TODO ´ý²âÊÔ
-    /* C stack block name, default is STACK */
-    #ifndef CMB_CSTACK_BLOCK_NAME
-    #define CMB_CSTACK_BLOCK_NAME          STACK
+    /* C stack block start address, defined on linker script file, default is _sstack */
+    #ifndef CMB_CSTACK_BLOCK_START
+    #define CMB_CSTACK_BLOCK_START         _sstack
     #endif
-    /* code section name, default is ER_IROM1 */
-    #ifndef CMB_CODE_SECTION_NAME
-    #define CMB_CODE_SECTION_NAME          ER_IROM1
+    /* C stack block end address, defined on linker script file, default is _estack */
+    #ifndef CMB_CSTACK_BLOCK_END
+    #define CMB_CSTACK_BLOCK_END           _estack
+    #endif
+    /* code section start address, defined on linker script file, default is _stext */
+    #ifndef CMB_CODE_SECTION_START
+    #define CMB_CODE_SECTION_START         _stext
+    #endif
+    /* code section end address, defined on linker script file, default is _etext */
+    #ifndef CMB_CODE_SECTION_END
+    #define CMB_CODE_SECTION_END           _etext
     #endif
 #else
     #error "not supported compiler"
@@ -263,7 +270,7 @@ if (!(EXPR))                                                                   \
 #elif defined(__ICCARM__)
     #define CMB_ELF_FILE_EXTENSION_NAME          ".out"
 #elif defined(__GNUC__)
-    #define CMB_ELF_FILE_EXTENSION_NAME          ".o"
+    #define CMB_ELF_FILE_EXTENSION_NAME          ".elf"
 #else
     #error "not supported compiler"
 #endif
@@ -302,17 +309,8 @@ if (!(EXPR))                                                                   \
     #endif /* (CMB_OS_PLATFORM_TYPE == CMB_OS_PLATFORM_RTT) */
 #endif /* (defined(CMB_USING_BARE_METAL_PLATFORM) && defined(CMB_USING_OS_PLATFORM)) */
 
-
-/* include or export for supported __get_MSP, __get_PSP, __get_SP function */
+/* include or export for supported, __get_SP function */
 #if defined(__CC_ARM)
-    static __inline __asm uint32_t __get_MSP(void) {
-        mrs r0, msp
-        bx lr
-    }
-    static __inline __asm uint32_t __get_PSP(void) {
-        mrs r0, psp
-        bx lr
-    }
     static __inline __asm uint32_t __get_SP(void) {
         mov r0, sp
         bx lr
@@ -320,20 +318,9 @@ if (!(EXPR))                                                                   \
 #elif defined(__ICCARM__)
     #include <intrinsics.h>
 #elif defined(__GNUC__)
-    //TODO ´ý²âÊÔ
-    __attribute__( ( always_inline ) ) static inline uint32_t __get_MSP(void) {
-        register uint32_t result;
-        __asm volatile ("MRS %0, msp\n" : "=r" (result) );
-        return(result);
-    }
-    __attribute__( ( always_inline ) ) static inline uint32_t __get_PSP(void) {
-        register uint32_t result;
-        __asm volatile ("MRS %0, psp\n" : "=r" (result) );
-        return(result);
-    }
     __attribute__( ( always_inline ) ) static inline uint32_t __get_SP(void) {
         register uint32_t result;
-        __asm volatile ("MRS %0, sp\n" : "=r" (result) );
+        __asm volatile ("MOV %0, sp\n" : "=r" (result) );
         return(result);
     }
 #else

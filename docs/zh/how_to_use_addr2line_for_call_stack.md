@@ -9,7 +9,7 @@ addr2line （它是标准的 [GNU Binutils](https://www.gnu.org/software/binutil
 Linux 系统一般会集成这个工具，本文重点介绍 Windows 系统下如何获取该工具。方法很多，我这里仅介绍两种方式
 
 - 第一种：安装 MinGW（网上教程很多，自行搜索），安装后在其安装目录的 `bin` 文件夹里会包含 `addr2line.exe` ，此时只用保证环境变量 `path` 中包含该路径即可；
-- 第二种：在本项目的 `tools` 文件夹中已存放 `addr2line.exe` ，可以将其直接拷贝至 `C:\Windows` 下，或者将 CmBacktrace 仓库的 `tools` 文件夹路径添加至到环境变量 `path` 中，这样都能保证命令行工具能正常使用 `addr2line` 命令。
+- 第二种（XP 平台除外）：在本项目的 `tools` 文件夹中已存放 `addr2line.exe` ，可以将其直接拷贝至 `C:\Windows` 下，或者将 CmBacktrace 仓库的 `tools` 文件夹路径添加至到环境变量 `path` 中，这样都能保证命令行工具能正常使用 `addr2line` 命令。
 
 ## addr2line 如何使用
 

@@ -1,7 +1,7 @@
 /*
  * This file is part of the CmBacktrace Library.
  *
- * Copyright (c) 2016, Armink, <armink.ztl@gmail.com>
+ * Copyright (c) 2016-2017, Armink, <armink.ztl@gmail.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -118,6 +118,8 @@ enum {
     PRINT_DFSR_DWTTRAP,
     PRINT_DFSR_VCATCH,
     PRINT_DFSR_EXTERNAL,
+    PRINT_MMAR,
+    PRINT_BFAR,
 };
 
 static const char *print_info[] = {
@@ -155,6 +157,8 @@ static const char *print_info[] = {
         [PRINT_DFSR_DWTTRAP]         = "Debug fault is caused by DWT match occurred",
         [PRINT_DFSR_VCATCH]          = "Debug fault is caused by Vector fetch occurred",
         [PRINT_DFSR_EXTERNAL]        = "Debug fault is caused by EDBGRQ signal asserted",
+        [PRINT_MMAR]                 = "The memory management fault occurred address is %08x",
+        [PRINT_BFAR]                 = "The bus fault occurred address is %08x",
 #elif (CMB_PRINT_LANGUAGE == CMB_PRINT_LANUUAGE_CHINESE)
         [PRINT_FIRMWARE_INFO]        = "固件名称：%s，硬件版本号：%s，软件版本号：%s",
         [PRINT_ASSERT_ON_THREAD]     = "在线程(%s)中发生断言",
@@ -189,6 +193,8 @@ static const char *print_info[] = {
         [PRINT_DFSR_DWTTRAP]         = "发生调试错误，原因：数据监测点匹配",
         [PRINT_DFSR_VCATCH]          = "发生调试错误，原因：发生向量捕获",
         [PRINT_DFSR_EXTERNAL]        = "发生调试错误，原因：外部调试请求",
+        [PRINT_MMAR]                 = "发生存储器管理错误的地址：%08x",
+        [PRINT_BFAR]                 = "发生总线错误的地址：%08x",
 #else
     #error "CMB_PRINT_LANGUAGE defined error in 'cmb_cfg.h'"
 #endif
@@ -497,7 +503,9 @@ static void fault_diagnosis(void) {
 #endif
 
             if (regs.mfsr.bits.MMARVALID) {
-                //TODO
+                if (regs.mfsr.bits.IACCVIOL || regs.mfsr.bits.DACCVIOL) {
+                    cmb_println(print_info[PRINT_MMAR], regs.mmar);
+                }
             }
         }
         /* Bus Fault */
@@ -525,8 +533,11 @@ static void fault_diagnosis(void) {
 #endif
 
             if (regs.bfsr.bits.BFARVALID) {
-                //TODO
+                if (regs.bfsr.bits.PRECISERR) {
+                    cmb_println(print_info[PRINT_BFAR], regs.bfar);
+                }
             }
+
         }
         /* Usage Fault */
         if (regs.ufsr.value) {
@@ -674,6 +685,7 @@ void cm_backtrace_fault(uint32_t fault_handler_lr, uint32_t fault_handler_sp) {
 #if (CMB_CPU_PLATFORM_TYPE != CMB_CPU_ARM_CORTEX_M0)
     regs.syshndctrl.value = CMB_SYSHND_CTRL;  // System Handler Control and State Register
     regs.mfsr.value       = CMB_NVIC_MFSR;    // Memory Fault Status Register
+    regs.mmar             = CMB_NVIC_MMAR;    // Memory Management Fault Address Register
     regs.bfsr.value       = CMB_NVIC_BFSR;    // Bus Fault Status Register
     regs.bfar             = CMB_NVIC_BFAR;    // Bus Fault Manage Address Register
     regs.ufsr.value       = CMB_NVIC_UFSR;    // Usage Fault Status Register

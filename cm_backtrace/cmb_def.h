@@ -1,7 +1,7 @@
 /*
  * This file is part of the CmBacktrace Library.
  *
- * Copyright (c) 2016, Armink, <armink.ztl@gmail.com>
+ * Copyright (c) 2016-2017, Armink, <armink.ztl@gmail.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -34,7 +34,7 @@
 #include <stdlib.h>
 
 /* library software version number */
-#define CMB_SW_VERSION                "0.1.1"
+#define CMB_SW_VERSION                "0.1.2"
 
 #define CMB_CPU_ARM_CORTEX_M0          0
 #define CMB_CPU_ARM_CORTEX_M3          1
@@ -134,6 +134,11 @@
 #define CMB_NVIC_DFSR                  (*(volatile unsigned short*)(0xE000ED30u))
 #endif
 
+/* memory management fault address register */
+#ifndef CMB_NVIC_MMAR
+#define CMB_NVIC_MMAR                  (*(volatile unsigned int*)  (0xE000ED34u))
+#endif
+
 /* bus fault manage address register */
 #ifndef CMB_NVIC_BFAR
 #define CMB_NVIC_BFAR                  (*(volatile unsigned int*)  (0xE000ED38u))
@@ -202,6 +207,7 @@ struct cmb_hard_fault_regs{
       unsigned char MMARVALID   : 1;     // Indicates the MMAR is valid
     } bits;
   } mfsr;                                // Memory Management Fault Status Register (0xE000ED28)
+  unsigned int mmar;                     // Memory Management Fault Address Register (0xE000ED34)
 
   union {
     unsigned char value;

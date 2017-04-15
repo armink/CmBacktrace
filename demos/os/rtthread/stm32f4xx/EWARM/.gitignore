@@ -1,0 +1,11 @@
+/STM32F405RG
+/Debug
+/Release
+/settings/*.dbgdt
+/settings/*.dni
+/settings/*.bat
+/settings/*.xcl
+/settings/*.wsdt
+/settings/*.jlink
+*.dep
+*.ewd

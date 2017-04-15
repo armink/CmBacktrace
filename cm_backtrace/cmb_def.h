@@ -34,7 +34,7 @@
 #include <stdlib.h>
 
 /* library software version number */
-#define CMB_SW_VERSION                "0.1.2"
+#define CMB_SW_VERSION                "0.1.3"
 
 #define CMB_CPU_ARM_CORTEX_M0          0
 #define CMB_CPU_ARM_CORTEX_M3          1
@@ -303,7 +303,6 @@ if (!(EXPR))                                                                   \
         #include <rtthread.h>
     #elif (CMB_OS_PLATFORM_TYPE == CMB_OS_PLATFORM_UCOSII)
         #include <ucos_ii.h>
-        //TODO ´ý²âÊÔ
     #elif (CMB_OS_PLATFORM_TYPE == CMB_OS_PLATFORM_UCOSIII)
         #include <os.h>
         //TODO ´ý²âÊÔ

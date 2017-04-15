@@ -275,14 +275,8 @@ static void get_cur_thread_stack_info(uint32_t sp, uint32_t *start_addr, size_t 
 #elif (CMB_OS_PLATFORM_TYPE == CMB_OS_PLATFORM_UCOSII)
     extern OS_TCB *OSTCBCur;
 
-#if OS_TASK_PROFILE_EN > 0
-    *start_addr = (uint32_t) OSTCBCur->OSTCBStkBase;
-    *size = (sp + OSTCBCur->OSTCBStkUsed) - *start_addr;
-#else
-     #error "OS_TASK_PROFILE_EN isn't enable in 'OS_CFG.H'"
-#endif /* OS_TASK_PROFILE_EN > 0 */
-
-    //TODO 测试
+    *start_addr = (uint32_t) OSTCBCur->OSTCBStkBottom;
+    *size = OSTCBCur->OSTCBStkSize * sizeof(OS_STK);
 #elif (CMB_OS_PLATFORM_TYPE == CMB_OS_PLATFORM_UCOSIII)
     #error "not implemented, I hope you can do this"
     //TODO 待实现
@@ -301,13 +295,12 @@ static const char *get_cur_thread_name(void) {
 #elif (CMB_OS_PLATFORM_TYPE == CMB_OS_PLATFORM_UCOSII)
     extern OS_TCB *OSTCBCur;
 
-#if OS_TASK_NAME_SIZE > 1
-        return OSTCBCur->OSTCBTaskName;
+#if OS_TASK_NAME_SIZE > 0 || OS_TASK_NAME_EN > 0
+        return (const char *)OSTCBCur->OSTCBTaskName;
 #else
         return NULL;
-#endif /* OS_TASK_NAME_SIZE > 1 */
+#endif /* OS_TASK_NAME_SIZE > 0 || OS_TASK_NAME_EN > 0 */
 
-    //TODO 待测试
 #elif (CMB_OS_PLATFORM_TYPE == CMB_OS_PLATFORM_UCOSIII)
     #error "not implemented, I hope you can do this"
     //TODO 待实现
@@ -622,7 +615,7 @@ void cm_backtrace_fault(uint32_t fault_handler_lr, uint32_t fault_handler_sp) {
     on_thread_before_fault = fault_handler_lr & (1UL << 2);
     /* check which stack was used before (MSP or PSP) */
     if (on_thread_before_fault) {
-        cmb_println(print_info[PRINT_FAULT_ON_THREAD], get_cur_thread_name());
+        cmb_println(print_info[PRINT_FAULT_ON_THREAD], get_cur_thread_name() != NULL ? get_cur_thread_name() : "NO_NAME");
         saved_regs_addr = stack_pointer = __get_PSP();
 
 #ifdef CMB_USING_DUMP_STACK_INFO

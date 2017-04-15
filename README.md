@@ -56,9 +56,11 @@
 |目录|平台|链接|
 |:--|:--:|:--:|
 | `\demos\non_os\stm32f10x` |裸机 STM32 Cortex-M3|[点击查看](https://github.com/armink/CmBacktrace/tree/master/demos/non_os/stm32f10x)|
-| `\demos\os\freertos\stm32f10x` |FreeRTOS STM32 Cortex-M3|[点击查看](https://github.com/armink/CmBacktrace/tree/master/demos/os/freertos/stm32f10x)|
-| `\demos\os\ucosii\stm32f20x` |UCOSII STM32 Cortex-M3|[点击查看](https://github.com/armink/CmBacktrace/tree/master/demos/os/ucosii/stm32f20x)|
 | `\demos\os\rtthread\stm32f4xx`|RT-Thread STM32 Cortex-M4|[点击查看](https://github.com/armink/CmBacktrace/tree/master/demos/os/rtthread/stm32f4xx)|
+| `\demos\os\ucosii\stm32f10x` |UCOSII STM32 Cortex-M3|[点击查看](https://github.com/armink/CmBacktrace/tree/master/demos/os/ucosii/stm32f10x)|
+| `\demos\os\freertos\stm32f10x` |FreeRTOS STM32 Cortex-M3|[点击查看](https://github.com/armink/CmBacktrace/tree/master/demos/os/freertos/stm32f10x)|
+
+
 
 ### 2.3 移植说明
 

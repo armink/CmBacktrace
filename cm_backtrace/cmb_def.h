@@ -34,7 +34,7 @@
 #include <stdlib.h>
 
 /* library software version number */
-#define CMB_SW_VERSION                "0.2.0"
+#define CMB_SW_VERSION                "0.2.1"
 
 #define CMB_CPU_ARM_CORTEX_M0          0
 #define CMB_CPU_ARM_CORTEX_M3          1
@@ -314,16 +314,51 @@ if (!(EXPR))                                                                   \
     #endif /* (CMB_OS_PLATFORM_TYPE == CMB_OS_PLATFORM_RTT) */
 #endif /* (defined(CMB_USING_BARE_METAL_PLATFORM) && defined(CMB_USING_OS_PLATFORM)) */
 
-/* include or export for supported, __get_SP function */
+/* include or export for supported cmb_get_msp, cmb_get_psp and cmb_get_sp function */
 #if defined(__CC_ARM)
-    static __inline __asm uint32_t __get_SP(void) {
+    static __inline __asm uint32_t cmb_get_msp(void) {
+        mrs r0, msp
+        bx lr
+    }
+    static __inline __asm uint32_t cmb_get_psp(void) {
+        mrs r0, psp
+        bx lr
+    }
+    static __inline __asm uint32_t cmb_get_sp(void) {
         mov r0, sp
         bx lr
     }
 #elif defined(__ICCARM__)
-    #include <intrinsics.h>
+    static uint32_t cmb_get_msp(void)
+    {
+        register uint32_t result;
+        __asm("MRS %0, msp" : "=r" (result));
+        return(result);
+    }
+    static uint32_t cmb_get_psp(void)
+    {
+        register uint32_t result;
+        __asm("MRS %0, psp" : "=r" (result));
+        return(result);
+    }
+    static uint32_t cmb_get_sp(void)
+    {
+        register uint32_t result;
+        __asm("MOV %0, sp" : "=r" (result));
+        return(result);
+    }
 #elif defined(__GNUC__)
-    __attribute__( ( always_inline ) ) static inline uint32_t __get_SP(void) {
+    __attribute__( ( always_inline ) ) static inline uint32_t cmb_get_msp(void) {
+        register uint32_t result;
+        __asm volatile ("MRS %0, msp\n" : "=r" (result) );
+        return(result);
+    }
+    __attribute__( ( always_inline ) ) static inline uint32_t cmb_get_psp(void) {
+        register uint32_t result;
+        __asm volatile ("MRS %0, psp\n" : "=r" (result) );
+        return(result);
+    }
+    __attribute__( ( always_inline ) ) static inline uint32_t cmb_get_sp(void) {
         register uint32_t result;
         __asm volatile ("MOV %0, sp\n" : "=r" (result) );
         return(result);

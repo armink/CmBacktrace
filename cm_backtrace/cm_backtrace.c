@@ -31,33 +31,6 @@
 #include <string.h>
 #include <stdio.h>
 
-/* include or export for supported __get_MSP, __get_PSP function */
-#if defined(__CC_ARM)
-    static __inline __asm uint32_t __get_MSP(void) {
-        mrs r0, msp
-        bx lr
-    }
-    static __inline __asm uint32_t __get_PSP(void) {
-        mrs r0, psp
-        bx lr
-    }
-#elif defined(__ICCARM__)
-    #include <intrinsics.h>
-#elif defined(__GNUC__)
-    __attribute__( ( always_inline ) ) static inline uint32_t __get_MSP(void) {
-        register uint32_t result;
-        __asm volatile ("MRS %0, msp\n" : "=r" (result) );
-        return(result);
-    }
-    __attribute__( ( always_inline ) ) static inline uint32_t __get_PSP(void) {
-        register uint32_t result;
-        __asm volatile ("MRS %0, psp\n" : "=r" (result) );
-        return(result);
-    }
-#else
-    #error "not supported compiler"
-#endif
-
 #if defined(__CC_ARM)
     #define SECTION_START(_name_)                _name_##$$Base
     #define SECTION_END(_name_)                  _name_##$$Limit
@@ -369,7 +342,7 @@ size_t cm_backtrace_call_stack(uint32_t *buffer, size_t size, uint32_t sp) {
         }
     } else {
         /* OS environment */
-        if (__get_SP() == __get_PSP()) {
+        if (cmb_get_sp() == cmb_get_psp()) {
             get_cur_thread_stack_info(sp, &stack_start_addr, &stack_size);
         }
 #endif /* CMB_USING_OS_PLATFORM */
@@ -426,7 +399,7 @@ void cm_backtrace_assert(uint32_t sp) {
     CMB_ASSERT(init_ok);
 
 #ifdef CMB_USING_OS_PLATFORM
-    uint32_t cur_stack_pointer = __get_SP();
+    uint32_t cur_stack_pointer = cmb_get_sp();
 #endif
 
     cmb_println("");
@@ -434,14 +407,14 @@ void cm_backtrace_assert(uint32_t sp) {
 
 #ifdef CMB_USING_OS_PLATFORM
     /* OS environment */
-    if (cur_stack_pointer == __get_MSP()) {
+    if (cur_stack_pointer == cmb_get_msp()) {
         cmb_println(print_info[PRINT_ASSERT_ON_HANDLER]);
 
 #ifdef CMB_USING_DUMP_STACK_INFO
         dump_main_stack(main_stack_start_addr, main_stack_size, (uint32_t *) sp);
 #endif /* CMB_USING_DUMP_STACK_INFO */
 
-    } else if (cur_stack_pointer == __get_PSP()) {
+    } else if (cur_stack_pointer == cmb_get_psp()) {
         cmb_println(print_info[PRINT_ASSERT_ON_THREAD], get_cur_thread_name());
 
 #ifdef CMB_USING_DUMP_STACK_INFO
@@ -616,7 +589,7 @@ void cm_backtrace_fault(uint32_t fault_handler_lr, uint32_t fault_handler_sp) {
     /* check which stack was used before (MSP or PSP) */
     if (on_thread_before_fault) {
         cmb_println(print_info[PRINT_FAULT_ON_THREAD], get_cur_thread_name() != NULL ? get_cur_thread_name() : "NO_NAME");
-        saved_regs_addr = stack_pointer = __get_PSP();
+        saved_regs_addr = stack_pointer = cmb_get_psp();
 
 #ifdef CMB_USING_DUMP_STACK_INFO
         get_cur_thread_stack_info(stack_pointer, &stack_start_addr, &stack_size);

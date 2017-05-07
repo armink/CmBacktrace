@@ -253,9 +253,9 @@ static void get_cur_thread_stack_info(uint32_t sp, uint32_t *start_addr, size_t 
 #elif (CMB_OS_PLATFORM_TYPE == CMB_OS_PLATFORM_UCOSIII)
     #error "not implemented, I hope you can do this"
     //TODO 待实现
-#elif (CMB_OS_PLATFORM_TYPE == CMB_OS_PLATFORM_FREERTOS)
-    #error "not implemented, I hope you can do this"
-    //TODO 待实现
+#elif (CMB_OS_PLATFORM_TYPE == CMB_OS_PLATFORM_FREERTOS)   
+    *start_addr = (uint32_t)vTaskStackAddr();
+    *size = vTaskStackSize() * sizeof( StackType_t );
 #endif
 }
 
@@ -278,8 +278,7 @@ static const char *get_cur_thread_name(void) {
     #error "not implemented, I hope you can do this"
     //TODO 待实现
 #elif (CMB_OS_PLATFORM_TYPE == CMB_OS_PLATFORM_FREERTOS)
-    #error "not implemented, I hope you can do this"
-    //TODO 待实现
+    return vTaskName();
 #endif
 }
 

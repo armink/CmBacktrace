@@ -307,8 +307,10 @@ if (!(EXPR))                                                                   \
         #include <os.h>
         //TODO ´ý²âÊÔ
     #elif (CMB_OS_PLATFORM_TYPE == CMB_OS_PLATFORM_FREERTOS)
-        #error "not implemented, I hope you can do this"
-        //TODO ´ýÊµÏÖ
+        #include <FreeRTOS.h>  
+        extern uint32_t *vTaskStackAddr(void);/* need to modify the FreeRTOS/tasks source code */
+        extern uint32_t vTaskStackSize(void);
+        extern char * vTaskName(void);
     #else
         #error "not supported OS type"
     #endif /* (CMB_OS_PLATFORM_TYPE == CMB_OS_PLATFORM_RTT) */

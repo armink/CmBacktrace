@@ -1,0 +1,12 @@
+/stm32f103xB
+/stm32f103xE
+/Debug
+/Release
+/settings/*.dbgdt
+/settings/*.dni
+/settings/*.bat
+/settings/*.xcl
+/settings/*.wsdt
+/settings/*.jlink
+*.dep
+*.ewd

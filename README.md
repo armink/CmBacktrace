@@ -1,6 +1,6 @@
 # CmBacktrace: ARM Cortex-M 系列 MCU 错误追踪库
 
-[![GitHub release](https://img.shields.io/github/release/armink/CmBacktrace.svg)](https://github.com/armink/CmBacktrace/releases/latest) [![GitHub commits](https://img.shields.io/github/commits-since/armink/CmBacktrace/0.2.0.svg)](https://github.com/armink/CmBacktrace/compare/0.2.0...master) [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/armink/CmBacktrace/master/LICENSE)
+[![GitHub release](https://img.shields.io/github/release/armink/CmBacktrace.svg)](https://github.com/armink/CmBacktrace/releases/latest) [![GitHub commits](https://img.shields.io/github/commits-since/armink/CmBacktrace/1.0.0.svg)](https://github.com/armink/CmBacktrace/compare/1.0.0...master) [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/armink/CmBacktrace/master/LICENSE)
 
 ## 0、CmBacktrace 是什么
 
@@ -14,7 +14,7 @@
 - 支持 裸机 及以下操作系统平台：
     - [RT-Thread](http://www.rt-thread.org/)
     - UCOS
-    - FreeRTOS
+    - FreeRTOS（需修改源码）
 - 根据错误现场状态，输出对应的 线程栈 或 C 主栈；
 - 故障诊断信息支持多国语言（目前：简体中文、英文）；
 - 适配 Cortex-M0/M3/M4/M7 MCU；

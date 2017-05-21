@@ -16,40 +16,44 @@
 Firmware name: CmBacktrace, hardware version: V1.0.0, software version: V0.1.0
 Fault on thread app_start
 ===== Thread stack information =====
-  addr: 200024d8    data: 03030303
-  addr: 200024dc    data: 00000000
-  addr: 200024e0    data: 05050505
-  addr: 200024e4    data: 06060606
-  addr: 200024e8    data: 07070707
-  addr: 200024ec    data: 08000195
-  addr: 200024f0    data: 04040404
-  addr: 200024f4    data: 08001c99
+  addr: 200011f0    data: a5a5a5a5
+  addr: 200011f4    data: 00000000
+  addr: 200011f8    data: a5a5a5a5
+  addr: 200011fc    data: a5a5a5a5
+  addr: 20001200    data: a5a5a5a5
+  addr: 20001204    data: 08000171
+  addr: 20001208    data: a5a5a5a5
+  addr: 2000120c    data: 080026ed
+  addr: 20001210    data: a5a5a5a5
+  addr: 20001214    data: a5a5a5a5
 ====================================
 =================== Registers information ====================
-  R0 : 00000000  R1 : 01010101  R2 : 02020202  R3 : 03030303
-  R12: 12121212  LR : 08000195  PC : 08001d24  PSR: 41000000
+  R0 : 00000000  R1 : a5a5a5a5  R2 : a5a5a5a5  R3 : a5a5a5a5
+  R12: a5a5a5a5  LR : 08000171  PC : 08001788  PSR: 41000000
 ==============================================================
 Usage fault is caused by Indicates a divide by zero has taken place (can be set only if DIV_0_TRP is set)
-Show more call stack info by run: addr2line -e CmBacktrace.out -a -f 08001d24 08000191 08001c95
+Show more call stack info by run: addr2line -e CmBacktrace.out -a -f 08001788 0800016d 080026e9
 ```
 
 ## STEP 4
 
-打开电脑上的命令行工具，进入项目工程的可执行文件所在路径（Keil 一般在 `Output` 下，可执行文件后缀 `.axf`；IAR 一般在 ` Exe` 下，可执行文件后缀 `.out`），将 STEP 3 最后输出的 `addr2line -e CmBacktrace.out -a -f 08001d24 08000191 08001c95` 拷贝至控制台，并执行（[点击查看 addr2line 工具的使用教程](https://github.com/armink/CmBacktrace/blob/master/docs/zh/how_to_use_addr2line_for_call_stack.md)），可看到类似如下，包含函数名称及代码行号的函数调用栈信息：
+打开电脑上的命令行工具，进入项目工程的可执行文件所在路径（Keil 一般在 `Output` 下，可执行文件后缀 `.axf`；IAR 一般在 ` Exe` 下，可执行文件后缀 `.out`），将 STEP 3 最后输出的 `addr2line -e CmBacktrace.out -a -f 08001788 0800016d 080026e9` 拷贝至控制台，并执行（[点击查看 addr2line 工具的使用教程](https://github.com/armink/CmBacktrace/blob/master/docs/zh/how_to_use_addr2line_for_call_stack.md)），可看到类似如下，包含函数名称及代码行号的函数调用栈信息：
 
 ```
-D:\Program\STM32\CmBacktrace\demos\os\ucosii\stm32f10x\EWARM\stm32f103xE\Exe>addr2line -e CmBacktrace.out -a -f 08001d24 08000191 08001c95
-0x08001d24
+D:\Program\STM32\CmBacktrace\demos\os\freertos\stm32f10x\EWARM\stm32f103xE\Exe>addr2line -e CmBacktrace.out -a -f 08001788 0800016d 080026e9
+0x08001788
 fault_test_by_div0
-D:\Program\STM32\CmBacktrace\demos\os\ucosii\stm32f10x\app\src/fault_test.c:38
-0x08000191
+D:\Program\STM32\CmBacktrace\demos\os\freertos\stm32f10x\app\src/fault_test.c:38
+0x0800016d
 AppTaskStart
-D:\Program\STM32\CmBacktrace\demos\os\ucosii\stm32f10x\app\src/app.c:49
-0x08001c95
-OSTaskSuspend
-D:\Program\STM32\CmBacktrace\demos\os\ucosii\stm32f10x\ucosii\Source/os_task.c:1006
+D:\Program\STM32\CmBacktrace\demos\os\freertos\stm32f10x\app\src/app.c:33
+0x080026e9
+pxPortInitialiseStack
+D:\Program\STM32\CmBacktrace\demos\os\freertos\stm32f10x\FreeRTOS\portable\IAR\ARM_CM3/port.c:224
 
-D:\Program\STM32\CmBacktrace\demos\os\ucosii\stm32f10x\EWARM\stm32f103xE\Exe>
+D:\Program\STM32\CmBacktrace\demos\os\freertos\stm32f10x\EWARM\stm32f103xE\Exe>
 ```
-##FreeRTOS源码修改说明   
-因为FreeRTOS的TCB中没有StackSize信息，所以在 `FreeRTOS/tasks.c` 中增加了 `uxSizeOfStack` 字段， 以及 `vTaskStackAddr()`、`vTaskStackSize()`、`vTaskName()`函数。
+
+## FreeRTOS 源码修改说明   
+ 
+因为 FreeRTOS 的 TCB 中没有 StackSize 信息，所以修改了其源码(基于 V9.0.0)，在 `FreeRTOS/tasks.c` 中增加了 `uxSizeOfStack` 字段， 以及 `vTaskStackAddr()` 、 `vTaskStackSize()` 、 `vTaskName()` 函数。

@@ -289,10 +289,6 @@ if (!(EXPR))                                                                   \
     #error "CMB_CPU_PLATFORM_TYPE isn't defined in 'cmb_cfg.h'"
 #endif
 
-#if __STDC_VERSION__ < 199901L
-    #error "not supported compiler, must be C99 or higher. try to add '-std=c99' to compile parameters"
-#endif
-
 #if (defined(CMB_USING_BARE_METAL_PLATFORM) && defined(CMB_USING_OS_PLATFORM))
     #error "CMB_USING_BARE_METAL_PLATFORM and CMB_USING_OS_PLATFORM only one of them can be used"
 #elif defined(CMB_USING_OS_PLATFORM)

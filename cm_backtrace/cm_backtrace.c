@@ -31,6 +31,10 @@
 #include <string.h>
 #include <stdio.h>
 
+#if __STDC_VERSION__ < 199901L
+    #error "must be C99 or higher. try to add '-std=c99' to compile parameters"
+#endif
+
 #if defined(__CC_ARM)
     #define SECTION_START(_name_)                _name_##$$Base
     #define SECTION_END(_name_)                  _name_##$$Limit

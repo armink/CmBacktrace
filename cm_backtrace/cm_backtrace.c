@@ -196,9 +196,7 @@ static struct cmb_hard_fault_regs regs;
 static bool statck_has_fpu_regs = false;
 #endif
 
-#ifdef CMB_USING_OS_PLATFORM
 static bool on_thread_before_fault = false;
-#endif
 
 /**
  * library initialize

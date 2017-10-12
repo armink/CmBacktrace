@@ -628,13 +628,12 @@ void cm_backtrace_fault(uint32_t fault_handler_lr, uint32_t fault_handler_sp) {
     stack_pointer = statck_del_fpu_regs(fault_handler_lr, stack_pointer);
 #endif /* (CMB_CPU_PLATFORM_TYPE == CMB_CPU_ARM_CORTEX_M4) || (CMB_CPU_PLATFORM_TYPE == CMB_CPU_ARM_CORTEX_M7) */
 
+#ifdef CMB_USING_DUMP_STACK_INFO
     /* check stack overflow */
     if (stack_pointer < stack_start_addr || stack_pointer > stack_start_addr + stack_size) {
         stack_is_overflow = true;
     }
-
     /* dump stack information */
-#ifdef CMB_USING_DUMP_STACK_INFO
     dump_stack(stack_start_addr, stack_size, (uint32_t *) stack_pointer);
 #endif /* CMB_USING_DUMP_STACK_INFO */
 

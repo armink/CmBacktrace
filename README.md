@@ -125,7 +125,7 @@ size_t cm_backtrace_call_stack(uint32_t *buffer, size_t size, uint32_t sp)
 uint32_t call_stack[16] = {0};
 size_t i, depth = 0;
 /* 获取当前环境下的函数调用栈，每个元素将会以 32 位地址形式存储， depth 为函数调用栈实际深度 */
-depth = cm_backtrace_call_stack(call_stack, sizeof(call_stack), __get_SP());
+depth = cm_backtrace_call_stack(call_stack, sizeof(call_stack), cmb_get_sp());
 /* 输出当前函数调用栈信息
  * 注意：查看函数名称及具体行号时，需要使用 addr2line 工具转换
  */

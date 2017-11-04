@@ -67,7 +67,7 @@ static rt_err_t exception_hook(void *context) {
     list_thread();
 #endif
 
-    cm_backtrace_fault(*((uint32_t *)(__get_SP() + sizeof(uint32_t) * 8)), __get_SP() + sizeof(uint32_t) * 9);
+    cm_backtrace_fault(*((uint32_t *)(cmb_get_sp() + sizeof(uint32_t) * 8)), cmb_get_sp() + sizeof(uint32_t) * 9);
 
     while (_continue == 1);
 

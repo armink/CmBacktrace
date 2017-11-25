@@ -91,7 +91,7 @@ enum {
     PRINT_UFSR_INVPC,
     PRINT_UFSR_NOCP,
     PRINT_UFSR_UNALIGNED,
-    PRINT_UFSR_DIVBYZERO,
+    PRINT_UFSR_DIVBYZERO0,
     PRINT_DFSR_HALTED,
     PRINT_DFSR_BKPT,
     PRINT_DFSR_DWTTRAP,
@@ -132,7 +132,7 @@ static const char *print_info[] = {
         [PRINT_UFSR_INVPC]            = "Usage fault is caused by attempts to do an exception with a bad value in the EXC_RETURN number",
         [PRINT_UFSR_NOCP]             = "Usage fault is caused by attempts to execute a coprocessor instruction",
         [PRINT_UFSR_UNALIGNED]        = "Usage fault is caused by indicates that an unaligned access fault has taken place",
-        [PRINT_UFSR_DIVBYZERO]        = "Usage fault is caused by Indicates a divide by zero has taken place (can be set only if DIV_0_TRP is set)",
+        [PRINT_UFSR_DIVBYZERO0]       = "Usage fault is caused by Indicates a divide by zero has taken place (can be set only if DIV_0_TRP is set)",
         [PRINT_DFSR_HALTED]           = "Debug fault is caused by halt requested in NVIC",
         [PRINT_DFSR_BKPT]             = "Debug fault is caused by BKPT instruction executed",
         [PRINT_DFSR_DWTTRAP]          = "Debug fault is caused by DWT match occurred",
@@ -170,7 +170,7 @@ static const char *print_info[] = {
         [PRINT_UFSR_INVPC]            = "发生用法错误，原因：无效的异常返回码",
         [PRINT_UFSR_NOCP]             = "发生用法错误，原因：企图执行协处理器指令",
         [PRINT_UFSR_UNALIGNED]        = "发生用法错误，原因：企图执行非对齐访问",
-        [PRINT_UFSR_DIVBYZERO]        = "发生用法错误，原因：企图执行除 0 操作",
+        [PRINT_UFSR_DIVBYZERO0]       = "发生用法错误，原因：企图执行除 0 操作",
         [PRINT_DFSR_HALTED]           = "发生调试错误，原因：NVIC 停机请求",
         [PRINT_DFSR_BKPT]             = "发生调试错误，原因：执行 BKPT 指令",
         [PRINT_DFSR_DWTTRAP]          = "发生调试错误，原因：数据监测点匹配",
@@ -540,8 +540,8 @@ static void fault_diagnosis(void) {
             if (regs.ufsr.bits.UNALIGNED) {
                 cmb_println(print_info[PRINT_UFSR_UNALIGNED]);
             }
-            if (regs.ufsr.bits.DIVBYZERO) {
-                cmb_println(print_info[PRINT_UFSR_DIVBYZERO]);
+            if (regs.ufsr.bits.DIVBYZERO0) {
+                cmb_println(print_info[PRINT_UFSR_DIVBYZERO0]);
             }
         }
     }

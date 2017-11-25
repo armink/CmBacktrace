@@ -34,7 +34,7 @@
 #include <stdlib.h>
 
 /* library software version number */
-#define CMB_SW_VERSION                "1.1.0"
+#define CMB_SW_VERSION                "1.1.1"
 
 #define CMB_CPU_ARM_CORTEX_M0          0
 #define CMB_CPU_ARM_CORTEX_M3          1
@@ -233,7 +233,7 @@ struct cmb_hard_fault_regs{
       unsigned short NOCP       : 1;     // Attempts to execute a coprocessor instruction
       unsigned short UnusedBits : 4;
       unsigned short UNALIGNED  : 1;     // Indicates that an unaligned access fault has taken place
-      unsigned short DIVBYZERO  : 1;     // Indicates a divide by zero has taken place (can be set only if DIV_0_TRP is set)
+      unsigned short DIVBYZERO0 : 1;     // Indicates a divide by zero has taken place (can be set only if DIV_0_TRP is set)
     } bits;
   } ufsr;                                // Usage Fault Status Register (0xE000ED2A)
 

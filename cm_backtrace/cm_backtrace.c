@@ -101,7 +101,7 @@ enum {
     PRINT_BFAR,
 };
 
-static const char *print_info[] = {
+static const char * const print_info[] = {
 #if (CMB_PRINT_LANGUAGE == CMB_PRINT_LANGUAGE_ENGLISH)
         [PRINT_FIRMWARE_INFO]         = "Firmware name: %s, hardware version: %s, software version: %s",
         [PRINT_ASSERT_ON_THREAD]      = "Assert on thread %s",

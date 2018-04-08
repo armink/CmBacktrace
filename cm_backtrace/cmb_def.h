@@ -327,24 +327,25 @@ if (!(EXPR))                                                                   \
         bx lr
     }
 #elif defined(__ICCARM__)
+/* IAR iccarm specific functions */
+/* Close Raw Asm Code Warning */  
+#pragma diag_suppress=Pe940    
     static uint32_t cmb_get_msp(void)
     {
-        register uint32_t result;
-        __asm("MRS %0, msp" : "=r" (result));
-        return(result);
+      __asm("mrs r0, msp");
+      __asm("bx lr");        
     }
     static uint32_t cmb_get_psp(void)
     {
-        register uint32_t result;
-        __asm("MRS %0, psp" : "=r" (result));
-        return(result);
+      __asm("mrs r0, psp");
+      __asm("bx lr");        
     }
     static uint32_t cmb_get_sp(void)
     {
-        register uint32_t result;
-        __asm("MOV %0, sp" : "=r" (result));
-        return(result);
+      __asm("mov r0, sp");
+      __asm("bx lr");       
     }
+#pragma diag_default=Pe940  
 #elif defined(__GNUC__)
     __attribute__( ( always_inline ) ) static inline uint32_t cmb_get_msp(void) {
         register uint32_t result;

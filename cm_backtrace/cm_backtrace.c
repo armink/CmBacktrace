@@ -260,8 +260,10 @@ static void get_cur_thread_stack_info(uint32_t sp, uint32_t *start_addr, size_t 
     *start_addr = (uint32_t) OSTCBCur->OSTCBStkBottom;
     *size = OSTCBCur->OSTCBStkSize * sizeof(OS_STK);
 #elif (CMB_OS_PLATFORM_TYPE == CMB_OS_PLATFORM_UCOSIII)
-    #error "not implemented, I hope you can do this"
-    //TODO 待实现
+    extern OS_TCB *OSTCBCurPtr; 
+    
+    *start_addr = (uint32_t) OSTCBCurPtr->StkBasePtr;
+    *size = OSTCBCurPtr->StkSize * sizeof(CPU_STK_SIZE);
 #elif (CMB_OS_PLATFORM_TYPE == CMB_OS_PLATFORM_FREERTOS)   
     *start_addr = (uint32_t)vTaskStackAddr();
     *size = vTaskStackSize() * sizeof( StackType_t );
@@ -284,8 +286,9 @@ static const char *get_cur_thread_name(void) {
 #endif /* OS_TASK_NAME_SIZE > 0 || OS_TASK_NAME_EN > 0 */
 
 #elif (CMB_OS_PLATFORM_TYPE == CMB_OS_PLATFORM_UCOSIII)
-    #error "not implemented, I hope you can do this"
-    //TODO 待实现
+    extern OS_TCB *OSTCBCurPtr; 
+    
+    return (const char *)OSTCBCurPtr->NamePtr;
 #elif (CMB_OS_PLATFORM_TYPE == CMB_OS_PLATFORM_FREERTOS)
     return vTaskName();
 #endif

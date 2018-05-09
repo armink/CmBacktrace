@@ -140,7 +140,7 @@ static const char * const print_info[] = {
         [PRINT_DFSR_EXTERNAL]         = "Debug fault is caused by EDBGRQ signal asserted",
         [PRINT_MMAR]                  = "The memory management fault occurred address is %08x",
         [PRINT_BFAR]                  = "The bus fault occurred address is %08x",
-#elif (CMB_PRINT_LANGUAGE == CMB_PRINT_LANUUAGE_CHINESE)
+#elif (CMB_PRINT_LANGUAGE == CMB_PRINT_LANGUAGE_CHINESE)
         [PRINT_FIRMWARE_INFO]         = "固件名称：%s，硬件版本号：%s，软件版本号：%s",
         [PRINT_ASSERT_ON_THREAD]      = "在线程(%s)中发生断言",
         [PRINT_ASSERT_ON_HANDLER]     = "在中断或裸机环境下发生断言",

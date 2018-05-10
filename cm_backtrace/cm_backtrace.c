@@ -110,7 +110,7 @@ static const char * const print_info[] = {
         [PRINT_MAIN_STACK_INFO]       = "====== Main stack information ======",
         [PRINT_THREAD_STACK_OVERFLOW] = "Error: Thread stack(%08x) was overflow",
         [PRINT_MAIN_STACK_OVERFLOW]   = "Error: Main stack(%08x) was overflow",
-        [PRINT_CALL_STACK_INFO]       = "Show more call stack info by run: addr2line -e %s%s -a -f %.*s",
+        [PRINT_CALL_STACK_INFO]       = "Show more call stack info by run: addr2line -e %s%s -a -f ",
         [PRINT_CALL_STACK_ERR]        = "Dump call stack has an error",
         [PRINT_FAULT_ON_THREAD]       = "Fault on thread %s",
         [PRINT_FAULT_ON_HANDLER]      = "Fault on interrupt or bare metal(no OS) environment",
@@ -148,7 +148,7 @@ static const char * const print_info[] = {
         [PRINT_MAIN_STACK_INFO]       = "============ 主堆栈信息 ============",
         [PRINT_THREAD_STACK_OVERFLOW] = "错误：线程栈(%08x)发生溢出",
         [PRINT_MAIN_STACK_OVERFLOW]   = "错误：主栈(%08x)发生溢出",
-        [PRINT_CALL_STACK_INFO]       = "查看更多函数调用栈信息，请运行：addr2line -e %s%s -a -f %.*s",
+        [PRINT_CALL_STACK_INFO]       = "查看更多函数调用栈信息，请运行：addr2line -e %s%s -a -f ",
         [PRINT_CALL_STACK_ERR]        = "获取函数调用栈失败",
         [PRINT_FAULT_ON_THREAD]       =  "在线程(%s)中发生错误异常",
         [PRINT_FAULT_ON_HANDLER]      = "在中断或裸机环境下发生错误异常",
@@ -404,8 +404,9 @@ static void print_call_stack(uint32_t sp) {
     }
 
     if (cur_depth) {
-        cmb_println(print_info[PRINT_CALL_STACK_INFO], fw_name, CMB_ELF_FILE_EXTENSION_NAME, cur_depth * (8 + 1),
-                call_stack_info);
+        // Keil5 may not parse %.*s properly, `call_stack_info` has to be parsed on a new print call.
+        cmb_print(print_info[PRINT_CALL_STACK_INFO], fw_name, CMB_ELF_FILE_EXTENSION_NAME, cur_depth * (8 + 1));
+        cmb_println("%s", call_stack_info);
     } else {
         cmb_println(print_info[PRINT_CALL_STACK_ERR]);
     }

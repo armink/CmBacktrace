@@ -374,6 +374,10 @@ size_t cm_backtrace_call_stack(uint32_t *buffer, size_t size, uint32_t sp) {
     for (; sp < stack_start_addr + stack_size; sp += sizeof(size_t)) {
         /* the *sp value may be LR, so need decrease a word to PC */
         pc = *((uint32_t *) sp) - sizeof(size_t);
+        /* the Cortex-M using thumb instruction, so the pc must be an odd number */
+        if (pc % 2 == 0) {
+            continue;
+        }
         if ((pc >= code_start_addr) && (pc <= code_start_addr + code_size) && (depth < CMB_CALL_STACK_MAX_DEPTH)
                 && (depth < size)) {
             /* the second depth function may be already saved, so need ignore repeat */

@@ -30,6 +30,7 @@
 #define _CMB_CFG_H_
 
 /* print line, must config by user */
+#define cmb_print(...)                 /* e.g., printf(__VA_ARGS__); */
 #define cmb_println(...)               /* e.g., printf(__VA_ARGS__);printf("\r\n") */
 /* enable bare metal(no OS) platform */
 /* #define CMB_USING_BARE_METAL_PLATFORM */
@@ -42,5 +43,5 @@
 /* enable dump stack information */
 /* #define CMB_USING_DUMP_STACK_INFO */
 /* language of print information */
-/* #define CMB_PRINT_LANGUAGE             CMB_PRINT_LANGUAGE_ENGLISH(default) or CMB_PRINT_LANUUAGE_CHINESE */
+/* #define CMB_PRINT_LANGUAGE             CMB_PRINT_LANGUAGE_ENGLISH(default) or CMB_PRINT_LANGUAGE_CHINESE */
 #endif /* _CMB_CFG_H_ */

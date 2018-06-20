@@ -267,6 +267,10 @@ static void get_cur_thread_stack_info(uint32_t sp, uint32_t *start_addr, size_t 
 #elif (CMB_OS_PLATFORM_TYPE == CMB_OS_PLATFORM_FREERTOS)   
     *start_addr = (uint32_t)vTaskStackAddr();
     *size = vTaskStackSize() * sizeof( StackType_t );
+#elif (CMB_OS_PLATFORM_TYPE == CMB_OS_PLATFORM_RTX5)
+  //osRtxThread_t *thread = osRtxInfo.thread.run.curr;
+    *start_addr = (uint32_t) osRtxInfo.thread.run.curr->stack_mem;
+    *size = osRtxInfo.thread.run.curr->stack_size;
 #endif
 }
 
@@ -291,6 +295,16 @@ static const char *get_cur_thread_name(void) {
     return (const char *)OSTCBCurPtr->NamePtr;
 #elif (CMB_OS_PLATFORM_TYPE == CMB_OS_PLATFORM_FREERTOS)
     return vTaskName();
+#elif (CMB_OS_PLATFORM_TYPE == CMB_OS_PLATFORM_RTX5)
+  //osRtxThread_t *thread = osRtxInfo.thread.run.curr;
+
+    if ((osRtxInfo.thread.run.curr == NULL) || (osRtxInfo.thread.run.curr->id != osRtxIdThread)) {
+      return NULL;  //lint !e{904} "Return statement before end of function" [MISRA Note 1]
+    }
+    if (osRtxInfo.thread.run.curr->state == osRtxObjectInactive) {
+      return NULL;  //lint -e{904} "Return statement before end of function" [MISRA Note 1]
+    }
+    return osRtxInfo.thread.run.curr->name;
 #endif
 }
 

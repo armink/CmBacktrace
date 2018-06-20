@@ -45,6 +45,7 @@
 #define CMB_OS_PLATFORM_UCOSII         1
 #define CMB_OS_PLATFORM_UCOSIII        2
 #define CMB_OS_PLATFORM_FREERTOS       3
+#define CMB_OS_PLATFORM_RTX5           4
 
 #define CMB_PRINT_LANGUAGE_ENGLISH     0
 #define CMB_PRINT_LANUUAGE_CHINESE     1
@@ -306,6 +307,8 @@ if (!(EXPR))                                                                   \
         extern uint32_t *vTaskStackAddr(void);/* need to modify the FreeRTOS/tasks source code */
         extern uint32_t vTaskStackSize(void);
         extern char * vTaskName(void);
+    #elif (CMB_OS_PLATFORM_TYPE == CMB_OS_PLATFORM_RTX5)
+        #include <rtx_os.h>
     #else
         #error "not supported OS type"
     #endif /* (CMB_OS_PLATFORM_TYPE == CMB_OS_PLATFORM_RTT) */

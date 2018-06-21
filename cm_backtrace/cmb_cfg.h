@@ -42,5 +42,5 @@
 /* enable dump stack information */
 /* #define CMB_USING_DUMP_STACK_INFO */
 /* language of print information */
-/* #define CMB_PRINT_LANGUAGE             CMB_PRINT_LANGUAGE_ENGLISH(default) or CMB_PRINT_LANUUAGE_CHINESE */
+/* #define CMB_PRINT_LANGUAGE             CMB_PRINT_LANGUAGE_ENGLISH(default) or CMB_PRINT_LANGUAGE_CHINESE */
 #endif /* _CMB_CFG_H_ */

@@ -48,7 +48,7 @@
 #define CMB_OS_PLATFORM_RTX5           4
 
 #define CMB_PRINT_LANGUAGE_ENGLISH     0
-#define CMB_PRINT_LANUUAGE_CHINESE     1
+#define CMB_PRINT_LANGUAGE_CHINESE     1
 
 /* name max length, default size: 32 */
 #ifndef CMB_NAME_MAX

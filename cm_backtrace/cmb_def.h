@@ -1,7 +1,7 @@
 /*
  * This file is part of the CmBacktrace Library.
  *
- * Copyright (c) 2016-2018, Armink, <armink.ztl@gmail.com>
+ * Copyright (c) 2016-2019, Armink, <armink.ztl@gmail.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -34,7 +34,7 @@
 #include <stdlib.h>
 
 /* library software version number */
-#define CMB_SW_VERSION                "1.2.1"
+#define CMB_SW_VERSION                "1.3.0"
 
 #define CMB_CPU_ARM_CORTEX_M0          0
 #define CMB_CPU_ARM_CORTEX_M3          1

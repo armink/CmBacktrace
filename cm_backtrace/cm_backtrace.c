@@ -1,7 +1,7 @@
 /*
  * This file is part of the CmBacktrace Library.
  *
- * Copyright (c) 2016-2017, Armink, <armink.ztl@gmail.com>
+ * Copyright (c) 2016-2019, Armink, <armink.ztl@gmail.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -62,6 +62,7 @@
 #endif
 
 enum {
+    PRINT_MAIN_STACK_CFG_ERROR,
     PRINT_FIRMWARE_INFO,
     PRINT_ASSERT_ON_THREAD,
     PRINT_ASSERT_ON_HANDLER,
@@ -103,6 +104,7 @@ enum {
 
 static const char * const print_info[] = {
 #if (CMB_PRINT_LANGUAGE == CMB_PRINT_LANGUAGE_ENGLISH)
+        [PRINT_MAIN_STACK_CFG_ERROR]  = "ERROR: Unable to get the main stack information, please check the configuration of the main stack",
         [PRINT_FIRMWARE_INFO]         = "Firmware name: %s, hardware version: %s, software version: %s",
         [PRINT_ASSERT_ON_THREAD]      = "Assert on thread %s",
         [PRINT_ASSERT_ON_HANDLER]     = "Assert on interrupt or bare metal(no OS) environment",
@@ -141,6 +143,7 @@ static const char * const print_info[] = {
         [PRINT_MMAR]                  = "The memory management fault occurred address is %08x",
         [PRINT_BFAR]                  = "The bus fault occurred address is %08x",
 #elif (CMB_PRINT_LANGUAGE == CMB_PRINT_LANGUAGE_CHINESE)
+        [PRINT_MAIN_STACK_CFG_ERROR]  = "错误：无法获取主栈信息，请检查主栈的相关配置",
         [PRINT_FIRMWARE_INFO]         = "固件名称：%s，硬件版本号：%s，软件版本号：%s",
         [PRINT_ASSERT_ON_THREAD]      = "在线程(%s)中发生断言",
         [PRINT_ASSERT_ON_HANDLER]     = "在中断或裸机环境下发生断言",
@@ -228,6 +231,11 @@ void cm_backtrace_init(const char *firmware_name, const char *hardware_ver, cons
 #else
     #error "not supported compiler"
 #endif
+
+    if (main_stack_size == 0) {
+        cmb_println(print_info[PRINT_MAIN_STACK_CFG_ERROR]);
+        return;
+    }
 
     init_ok = true;
 }

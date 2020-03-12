@@ -329,6 +329,26 @@ static void dump_stack(uint32_t stack_start_addr, size_t stack_size, uint32_t *s
 }
 #endif /* CMB_USING_DUMP_STACK_INFO */
 
+/* check the disassembly instruction is 'BL' or 'BLX' */
+static bool disassembly_ins_is_bl_blx(uint32_t addr) {
+    uint16_t ins1 = *((uint16_t *)addr);
+    uint16_t ins2 = *((uint16_t *)(addr + 2));
+
+#define BL_INS_MASK         0xF800
+#define BL_INS_HIGH         0xF800
+#define BL_INS_LOW          0xF000
+#define BLX_INX_MASK        0xFF00
+#define BLX_INX             0x4700
+
+    if ((ins2 & BL_INS_MASK) == BL_INS_HIGH && (ins1 & BL_INS_MASK) == BL_INS_LOW) {
+        return true;
+    } else if ((ins2 & BLX_INX_MASK) == BLX_INX) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
 /**
  * backtrace function call stack
  *
@@ -347,8 +367,8 @@ size_t cm_backtrace_call_stack(uint32_t *buffer, size_t size, uint32_t sp) {
         if (!stack_is_overflow) {
             /* first depth is PC */
             buffer[depth++] = regs.saved.pc;
-            /* second depth is from LR, so need decrease a word to PC */
-            pc = regs.saved.lr - sizeof(size_t);
+            /* fix the LR address in thumb mode */
+            pc = regs.saved.lr - 1;
             if ((pc >= code_start_addr) && (pc <= code_start_addr + code_size) && (depth < CMB_CALL_STACK_MAX_DEPTH)
                     && (depth < size)) {
                 buffer[depth++] = pc;
@@ -386,8 +406,11 @@ size_t cm_backtrace_call_stack(uint32_t *buffer, size_t size, uint32_t sp) {
         if (pc % 2 == 0) {
             continue;
         }
+        /* fix the PC address in thumb mode */
+        pc = *((uint32_t *) sp) - 1;
         if ((pc >= code_start_addr) && (pc <= code_start_addr + code_size) && (depth < CMB_CALL_STACK_MAX_DEPTH)
-                && (depth < size)) {
+                /* check the the instruction before PC address is 'BL' or 'BLX' */
+                && disassembly_ins_is_bl_blx(pc - sizeof(size_t)) && (depth < size)) {
             /* the second depth function may be already saved, so need ignore repeat */
             if ((depth == 2) && regs_saved_lr_is_valid && (pc == buffer[1])) {
                 continue;

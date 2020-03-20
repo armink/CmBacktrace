@@ -251,11 +251,10 @@ void cm_backtrace_firmware_info(void) {
 /**
  * Get current thread stack information
  *
- * @param sp stack current pointer
  * @param start_addr stack start address
  * @param size stack size
  */
-static void get_cur_thread_stack_info(uint32_t sp, uint32_t *start_addr, size_t *size) {
+static void get_cur_thread_stack_info(uint32_t *start_addr, size_t *size) {
     CMB_ASSERT(start_addr);
     CMB_ASSERT(size);
 
@@ -287,7 +286,7 @@ static const char *get_cur_thread_name(void) {
 #elif (CMB_OS_PLATFORM_TYPE == CMB_OS_PLATFORM_UCOSII)
     extern OS_TCB *OSTCBCur;
 
-#if OS_TASK_NAME_SIZE > 0 || OS_TASK_NAME_EN > 0
+#if  OS_TASK_NAME_EN > 0
         return (const char *)OSTCBCur->OSTCBTaskName;
 #else
         return NULL;
@@ -611,7 +610,7 @@ static uint32_t statck_del_fpu_regs(uint32_t fault_handler_lr, uint32_t sp) {
     statck_has_fpu_regs = (fault_handler_lr & (1UL << 4)) == 0 ? true : false;
 
     /* the stack has S0~S15 and FPSCR registers when statck_has_fpu_regs is true, double word align */
-    return statck_has_fpu_regs == true ? sp + sizeof(size_t) * 18 : sp;
+    return statck_has_fpu_regs == true ? sp + sizeof(size_t) * 17 : sp;
 }
 #endif
 
@@ -668,7 +667,7 @@ void cm_backtrace_fault(uint32_t fault_handler_lr, uint32_t fault_handler_sp) {
 
 #ifdef CMB_USING_DUMP_STACK_INFO
     /* check stack overflow */
-    if (stack_pointer < stack_start_addr || stack_pointer > stack_start_addr + stack_size) {
+    if (stack_pointer < stack_start_addr || stack_pointer >=  stack_start_addr + stack_size) {
         stack_is_overflow = true;
     }
     /* dump stack information */

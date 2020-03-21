@@ -60,7 +60,7 @@
 #endif
 
 
-#if defined(__CC_ARM)
+#if defined(__CC_ARM) || (defined(__ARMCC_VERSION) && (__ARMCC_VERSION >= 6120001))
     /* C stack block name, default is STACK */
     #ifndef CMB_CSTACK_BLOCK_NAME
     #define CMB_CSTACK_BLOCK_NAME          STACK

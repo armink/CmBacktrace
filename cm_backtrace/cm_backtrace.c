@@ -35,7 +35,7 @@
     #error "must be C99 or higher. try to add '-std=c99' to compile parameters"
 #endif
 
-#if defined(__CC_ARM) || (defined(__ARMCC_VERSION) && (__ARMCC_VERSION >= 6120001))
+#if defined(__CC_ARM) || defined(__CLANG_ARM)
     #define SECTION_START(_name_)                _name_##$$Base
     #define SECTION_END(_name_)                  _name_##$$Limit
     #define IMAGE_SECTION_START(_name_)          Image$$##_name_##$$Base

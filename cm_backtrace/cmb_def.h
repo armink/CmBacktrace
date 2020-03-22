@@ -60,7 +60,7 @@
 #endif
 
 
-#if defined(__CC_ARM) || (defined(__ARMCC_VERSION) && (__ARMCC_VERSION >= 6120001))
+#if defined(__CC_ARM) || defined(__CLANG_ARM)
     /* C stack block name, default is STACK */
     #ifndef CMB_CSTACK_BLOCK_NAME
     #define CMB_CSTACK_BLOCK_NAME          STACK
@@ -271,7 +271,7 @@ if (!(EXPR))                                                                   \
 }
 
 /* ELF(Executable and Linking Format) file extension name for each compiler */
-#if defined(__CC_ARM)
+#if defined(__CC_ARM) || defined(__CLANG_ARM)
     #define CMB_ELF_FILE_EXTENSION_NAME          ".axf"
 #elif defined(__ICCARM__)
     #define CMB_ELF_FILE_EXTENSION_NAME          ".out"
@@ -312,7 +312,7 @@ if (!(EXPR))                                                                   \
 #endif /* (defined(CMB_USING_BARE_METAL_PLATFORM) && defined(CMB_USING_OS_PLATFORM)) */
 
 /* include or export for supported cmb_get_msp, cmb_get_psp and cmb_get_sp function */
-#if defined(__CC_ARM)
+#if defined(__CC_ARM) || defined(__CLANG_ARM)
     static __inline __asm uint32_t cmb_get_msp(void) {
         mrs r0, msp
         bx lr

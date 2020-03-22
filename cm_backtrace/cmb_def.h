@@ -60,7 +60,11 @@
 #endif
 
 
+<<<<<<< HEAD
 #if defined(__CC_ARM) || defined(__CLANG_ARM)
+=======
+#if defined(__CC_ARM)
+>>>>>>> parent of 735020f... 添加AC6预定义支持
     /* C stack block name, default is STACK */
     #ifndef CMB_CSTACK_BLOCK_NAME
     #define CMB_CSTACK_BLOCK_NAME          STACK

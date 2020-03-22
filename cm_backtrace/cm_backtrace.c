@@ -35,11 +35,7 @@
     #error "must be C99 or higher. try to add '-std=c99' to compile parameters"
 #endif
 
-<<<<<<< HEAD
-#if defined(__CC_ARM) || defined(__CLANG_ARM)
-=======
-#if defined(__CC_ARM)
->>>>>>> parent of 735020f... 添加AC6预定义支持
+#if defined(__CC_ARM) || (defined(__ARMCC_VERSION) && (__ARMCC_VERSION >= 6120001))
     #define SECTION_START(_name_)                _name_##$$Base
     #define SECTION_END(_name_)                  _name_##$$Limit
     #define IMAGE_SECTION_START(_name_)          Image$$##_name_##$$Base
@@ -147,44 +143,44 @@ static const char * const print_info[] = {
         [PRINT_MMAR]                  = "The memory management fault occurred address is %08x",
         [PRINT_BFAR]                  = "The bus fault occurred address is %08x",
 #elif (CMB_PRINT_LANGUAGE == CMB_PRINT_LANGUAGE_CHINESE)
-        [PRINT_MAIN_STACK_CFG_ERROR]  = "错误：无法获取主栈信息，请检查主栈的相关配置",
-        [PRINT_FIRMWARE_INFO]         = "固件名称：%s，硬件版本号：%s，软件版本号：%s",
-        [PRINT_ASSERT_ON_THREAD]      = "在线程(%s)中发生断言",
-        [PRINT_ASSERT_ON_HANDLER]     = "在中断或裸机环境下发生断言",
-        [PRINT_THREAD_STACK_INFO]     = "=========== 线程堆栈信息 ===========",
-        [PRINT_MAIN_STACK_INFO]       = "============ 主堆栈信息 ============",
-        [PRINT_THREAD_STACK_OVERFLOW] = "错误：线程栈(%08x)发生溢出",
-        [PRINT_MAIN_STACK_OVERFLOW]   = "错误：主栈(%08x)发生溢出",
-        [PRINT_CALL_STACK_INFO]       = "查看更多函数调用栈信息，请运行：addr2line -e %s%s -a -f %.*s",
-        [PRINT_CALL_STACK_ERR]        = "获取函数调用栈失败",
-        [PRINT_FAULT_ON_THREAD]       =  "在线程(%s)中发生错误异常",
-        [PRINT_FAULT_ON_HANDLER]      = "在中断或裸机环境下发生错误异常",
-        [PRINT_REGS_TITLE]            = "========================= 寄存器信息 =========================",
-        [PRINT_HFSR_VECTBL]           = "发生硬错误，原因：取中断向量时出错",
-        [PRINT_MFSR_IACCVIOL]         = "发生存储器管理错误，原因：企图从不允许访问的区域取指令",
-        [PRINT_MFSR_DACCVIOL]         = "发生存储器管理错误，原因：企图从不允许访问的区域读、写数据",
-        [PRINT_MFSR_MUNSTKERR]        = "发生存储器管理错误，原因：出栈时企图访问不被允许的区域",
-        [PRINT_MFSR_MSTKERR]          = "发生存储器管理错误，原因：入栈时企图访问不被允许的区域",
-        [PRINT_MFSR_MLSPERR]          = "发生存储器管理错误，原因：惰性保存浮点状态时发生错误",
-        [PRINT_BFSR_IBUSERR]          = "发生总线错误，原因：指令总线错误",
-        [PRINT_BFSR_PRECISERR]        = "发生总线错误，原因：精确的数据总线错误",
-        [PRINT_BFSR_IMPREISERR]       = "发生总线错误，原因：不精确的数据总线错误",
-        [PRINT_BFSR_UNSTKERR]         = "发生总线错误，原因：出栈时发生错误",
-        [PRINT_BFSR_STKERR]           = "发生总线错误，原因：入栈时发生错误",
-        [PRINT_BFSR_LSPERR]           = "发生总线错误，原因：惰性保存浮点状态时发生错误",
-        [PRINT_UFSR_UNDEFINSTR]       = "发生用法错误，原因：企图执行未定义指令",
-        [PRINT_UFSR_INVSTATE]         = "发生用法错误，原因：试图切换到 ARM 状态",
-        [PRINT_UFSR_INVPC]            = "发生用法错误，原因：无效的异常返回码",
-        [PRINT_UFSR_NOCP]             = "发生用法错误，原因：企图执行协处理器指令",
-        [PRINT_UFSR_UNALIGNED]        = "发生用法错误，原因：企图执行非对齐访问",
-        [PRINT_UFSR_DIVBYZERO0]       = "发生用法错误，原因：企图执行除 0 操作",
-        [PRINT_DFSR_HALTED]           = "发生调试错误，原因：NVIC 停机请求",
-        [PRINT_DFSR_BKPT]             = "发生调试错误，原因：执行 BKPT 指令",
-        [PRINT_DFSR_DWTTRAP]          = "发生调试错误，原因：数据监测点匹配",
-        [PRINT_DFSR_VCATCH]           = "发生调试错误，原因：发生向量捕获",
-        [PRINT_DFSR_EXTERNAL]         = "发生调试错误，原因：外部调试请求",
-        [PRINT_MMAR]                  = "发生存储器管理错误的地址：%08x",
-        [PRINT_BFAR]                  = "发生总线错误的地址：%08x",
+        [PRINT_MAIN_STACK_CFG_ERROR]  = "�����޷���ȡ��ջ��Ϣ��������ջ���������",
+        [PRINT_FIRMWARE_INFO]         = "�̼����ƣ�%s��Ӳ���汾�ţ�%s�������汾�ţ�%s",
+        [PRINT_ASSERT_ON_THREAD]      = "���߳�(%s)�з�������",
+        [PRINT_ASSERT_ON_HANDLER]     = "���жϻ���������·�������",
+        [PRINT_THREAD_STACK_INFO]     = "=========== �̶߳�ջ��Ϣ ===========",
+        [PRINT_MAIN_STACK_INFO]       = "============ ����ջ��Ϣ ============",
+        [PRINT_THREAD_STACK_OVERFLOW] = "�����߳�ջ(%08x)�������",
+        [PRINT_MAIN_STACK_OVERFLOW]   = "������ջ(%08x)�������",
+        [PRINT_CALL_STACK_INFO]       = "�鿴���ຯ������ջ��Ϣ�������У�addr2line -e %s%s -a -f %.*s",
+        [PRINT_CALL_STACK_ERR]        = "��ȡ��������ջʧ��",
+        [PRINT_FAULT_ON_THREAD]       =  "���߳�(%s)�з��������쳣",
+        [PRINT_FAULT_ON_HANDLER]      = "���жϻ���������·��������쳣",
+        [PRINT_REGS_TITLE]            = "========================= �Ĵ�����Ϣ =========================",
+        [PRINT_HFSR_VECTBL]           = "����Ӳ����ԭ��ȡ�ж�����ʱ����",
+        [PRINT_MFSR_IACCVIOL]         = "�����洢����������ԭ����ͼ�Ӳ��������ʵ�����ȡָ��",
+        [PRINT_MFSR_DACCVIOL]         = "�����洢����������ԭ����ͼ�Ӳ��������ʵ��������д����",
+        [PRINT_MFSR_MUNSTKERR]        = "�����洢����������ԭ�򣺳�ջʱ��ͼ���ʲ�������������",
+        [PRINT_MFSR_MSTKERR]          = "�����洢����������ԭ����ջʱ��ͼ���ʲ�������������",
+        [PRINT_MFSR_MLSPERR]          = "�����洢����������ԭ�򣺶��Ա��渡��״̬ʱ��������",
+        [PRINT_BFSR_IBUSERR]          = "�������ߴ���ԭ��ָ�����ߴ���",
+        [PRINT_BFSR_PRECISERR]        = "�������ߴ���ԭ�򣺾�ȷ���������ߴ���",
+        [PRINT_BFSR_IMPREISERR]       = "�������ߴ���ԭ�򣺲���ȷ���������ߴ���",
+        [PRINT_BFSR_UNSTKERR]         = "�������ߴ���ԭ�򣺳�ջʱ��������",
+        [PRINT_BFSR_STKERR]           = "�������ߴ���ԭ����ջʱ��������",
+        [PRINT_BFSR_LSPERR]           = "�������ߴ���ԭ�򣺶��Ա��渡��״̬ʱ��������",
+        [PRINT_UFSR_UNDEFINSTR]       = "�����÷�����ԭ����ͼִ��δ����ָ��",
+        [PRINT_UFSR_INVSTATE]         = "�����÷�����ԭ����ͼ�л��� ARM ״̬",
+        [PRINT_UFSR_INVPC]            = "�����÷�����ԭ����Ч���쳣������",
+        [PRINT_UFSR_NOCP]             = "�����÷�����ԭ����ͼִ��Э������ָ��",
+        [PRINT_UFSR_UNALIGNED]        = "�����÷�����ԭ����ͼִ�зǶ������",
+        [PRINT_UFSR_DIVBYZERO0]       = "�����÷�����ԭ����ͼִ�г� 0 ����",
+        [PRINT_DFSR_HALTED]           = "�������Դ���ԭ��NVIC ͣ������",
+        [PRINT_DFSR_BKPT]             = "�������Դ���ԭ��ִ�� BKPT ָ��",
+        [PRINT_DFSR_DWTTRAP]          = "�������Դ���ԭ�����ݼ���ƥ��",
+        [PRINT_DFSR_VCATCH]           = "�������Դ���ԭ�򣺷�����������",
+        [PRINT_DFSR_EXTERNAL]         = "�������Դ���ԭ���ⲿ��������",
+        [PRINT_MMAR]                  = "�����洢����������ĵ�ַ��%08x",
+        [PRINT_BFAR]                  = "�������ߴ���ĵ�ַ��%08x",
 #else
     #error "CMB_PRINT_LANGUAGE defined error in 'cmb_cfg.h'"
 #endif
@@ -217,11 +213,7 @@ void cm_backtrace_init(const char *firmware_name, const char *hardware_ver, cons
     strncpy(hw_ver, hardware_ver, CMB_NAME_MAX);
     strncpy(sw_ver, software_ver, CMB_NAME_MAX);
 
-<<<<<<< HEAD
-#if defined(__CC_ARM)
-=======
-#if defined(__CC_ARM) || defined(__CLANG_ARM)
->>>>>>> fb2ce800e341910fdfc3e4b5081a9f4655da530f
+#if defined(__CC_ARM) || (defined(__ARMCC_VERSION) && (__ARMCC_VERSION >= 6120001))
     main_stack_start_addr = (uint32_t)&CSTACK_BLOCK_START(CMB_CSTACK_BLOCK_NAME);
     main_stack_size = (uint32_t)&CSTACK_BLOCK_END(CMB_CSTACK_BLOCK_NAME) - main_stack_start_addr;
     code_start_addr = (uint32_t)&CODE_SECTION_START(CMB_CODE_SECTION_NAME);
@@ -442,7 +434,7 @@ static void print_call_stack(uint32_t sp) {
     cur_depth = cm_backtrace_call_stack(call_stack_buf, CMB_CALL_STACK_MAX_DEPTH, sp);
 
     for (i = 0; i < cur_depth; i++) {
-        sprintf(call_stack_info + i * (8 + 1), "%08lx", call_stack_buf[i]);
+        sprintf(call_stack_info + i * (8 + 1), "%08x", call_stack_buf[i]);
         call_stack_info[i * (8 + 1) + 8] = ' ';
     }
 

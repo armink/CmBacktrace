@@ -35,7 +35,7 @@
     #error "must be C99 or higher. try to add '-std=c99' to compile parameters"
 #endif
 
-#if defined(__CC_ARM)
+#if defined(__CC_ARM) || defined(__CLANG_ARM)
     #define SECTION_START(_name_)                _name_##$$Base
     #define SECTION_END(_name_)                  _name_##$$Limit
     #define IMAGE_SECTION_START(_name_)          Image$$##_name_##$$Base
@@ -91,6 +91,9 @@ enum {
     PRINT_UFSR_INVSTATE,
     PRINT_UFSR_INVPC,
     PRINT_UFSR_NOCP,
+#if (CMB_CPU_PLATFORM_TYPE == CMB_CPU_ARM_CORTEX_M33)
+    PRINT_UFSR_STKOF,
+#endif
     PRINT_UFSR_UNALIGNED,
     PRINT_UFSR_DIVBYZERO0,
     PRINT_DFSR_HALTED,
@@ -104,83 +107,11 @@ enum {
 
 static const char * const print_info[] = {
 #if (CMB_PRINT_LANGUAGE == CMB_PRINT_LANGUAGE_ENGLISH)
-        [PRINT_MAIN_STACK_CFG_ERROR]  = "ERROR: Unable to get the main stack information, please check the configuration of the main stack",
-        [PRINT_FIRMWARE_INFO]         = "Firmware name: %s, hardware version: %s, software version: %s",
-        [PRINT_ASSERT_ON_THREAD]      = "Assert on thread %s",
-        [PRINT_ASSERT_ON_HANDLER]     = "Assert on interrupt or bare metal(no OS) environment",
-        [PRINT_THREAD_STACK_INFO]     = "===== Thread stack information =====",
-        [PRINT_MAIN_STACK_INFO]       = "====== Main stack information ======",
-        [PRINT_THREAD_STACK_OVERFLOW] = "Error: Thread stack(%08x) was overflow",
-        [PRINT_MAIN_STACK_OVERFLOW]   = "Error: Main stack(%08x) was overflow",
-        [PRINT_CALL_STACK_INFO]       = "Show more call stack info by run: addr2line -e %s%s -a -f %.*s",
-        [PRINT_CALL_STACK_ERR]        = "Dump call stack has an error",
-        [PRINT_FAULT_ON_THREAD]       = "Fault on thread %s",
-        [PRINT_FAULT_ON_HANDLER]      = "Fault on interrupt or bare metal(no OS) environment",
-        [PRINT_REGS_TITLE]            = "=================== Registers information ====================",
-        [PRINT_HFSR_VECTBL]           = "Hard fault is caused by failed vector fetch",
-        [PRINT_MFSR_IACCVIOL]         = "Memory management fault is caused by instruction access violation",
-        [PRINT_MFSR_DACCVIOL]         = "Memory management fault is caused by data access violation",
-        [PRINT_MFSR_MUNSTKERR]        = "Memory management fault is caused by unstacking error",
-        [PRINT_MFSR_MSTKERR]          = "Memory management fault is caused by stacking error",
-        [PRINT_MFSR_MLSPERR]          = "Memory management fault is caused by floating-point lazy state preservation",
-        [PRINT_BFSR_IBUSERR]          = "Bus fault is caused by instruction access violation",
-        [PRINT_BFSR_PRECISERR]        = "Bus fault is caused by precise data access violation",
-        [PRINT_BFSR_IMPREISERR]       = "Bus fault is caused by imprecise data access violation",
-        [PRINT_BFSR_UNSTKERR]         = "Bus fault is caused by unstacking error",
-        [PRINT_BFSR_STKERR]           = "Bus fault is caused by stacking error",
-        [PRINT_BFSR_LSPERR]           = "Bus fault is caused by floating-point lazy state preservation",
-        [PRINT_UFSR_UNDEFINSTR]       = "Usage fault is caused by attempts to execute an undefined instruction",
-        [PRINT_UFSR_INVSTATE]         = "Usage fault is caused by attempts to switch to an invalid state (e.g., ARM)",
-        [PRINT_UFSR_INVPC]            = "Usage fault is caused by attempts to do an exception with a bad value in the EXC_RETURN number",
-        [PRINT_UFSR_NOCP]             = "Usage fault is caused by attempts to execute a coprocessor instruction",
-        [PRINT_UFSR_UNALIGNED]        = "Usage fault is caused by indicates that an unaligned access fault has taken place",
-        [PRINT_UFSR_DIVBYZERO0]       = "Usage fault is caused by Indicates a divide by zero has taken place (can be set only if DIV_0_TRP is set)",
-        [PRINT_DFSR_HALTED]           = "Debug fault is caused by halt requested in NVIC",
-        [PRINT_DFSR_BKPT]             = "Debug fault is caused by BKPT instruction executed",
-        [PRINT_DFSR_DWTTRAP]          = "Debug fault is caused by DWT match occurred",
-        [PRINT_DFSR_VCATCH]           = "Debug fault is caused by Vector fetch occurred",
-        [PRINT_DFSR_EXTERNAL]         = "Debug fault is caused by EDBGRQ signal asserted",
-        [PRINT_MMAR]                  = "The memory management fault occurred address is %08x",
-        [PRINT_BFAR]                  = "The bus fault occurred address is %08x",
+    #include "Languages/en-US/cmb_en_US.h"
 #elif (CMB_PRINT_LANGUAGE == CMB_PRINT_LANGUAGE_CHINESE)
-        [PRINT_MAIN_STACK_CFG_ERROR]  = "错误：无法获取主栈信息，请检查主栈的相关配置",
-        [PRINT_FIRMWARE_INFO]         = "固件名称：%s，硬件版本号：%s，软件版本号：%s",
-        [PRINT_ASSERT_ON_THREAD]      = "在线程(%s)中发生断言",
-        [PRINT_ASSERT_ON_HANDLER]     = "在中断或裸机环境下发生断言",
-        [PRINT_THREAD_STACK_INFO]     = "=========== 线程堆栈信息 ===========",
-        [PRINT_MAIN_STACK_INFO]       = "============ 主堆栈信息 ============",
-        [PRINT_THREAD_STACK_OVERFLOW] = "错误：线程栈(%08x)发生溢出",
-        [PRINT_MAIN_STACK_OVERFLOW]   = "错误：主栈(%08x)发生溢出",
-        [PRINT_CALL_STACK_INFO]       = "查看更多函数调用栈信息，请运行：addr2line -e %s%s -a -f %.*s",
-        [PRINT_CALL_STACK_ERR]        = "获取函数调用栈失败",
-        [PRINT_FAULT_ON_THREAD]       =  "在线程(%s)中发生错误异常",
-        [PRINT_FAULT_ON_HANDLER]      = "在中断或裸机环境下发生错误异常",
-        [PRINT_REGS_TITLE]            = "========================= 寄存器信息 =========================",
-        [PRINT_HFSR_VECTBL]           = "发生硬错误，原因：取中断向量时出错",
-        [PRINT_MFSR_IACCVIOL]         = "发生存储器管理错误，原因：企图从不允许访问的区域取指令",
-        [PRINT_MFSR_DACCVIOL]         = "发生存储器管理错误，原因：企图从不允许访问的区域读、写数据",
-        [PRINT_MFSR_MUNSTKERR]        = "发生存储器管理错误，原因：出栈时企图访问不被允许的区域",
-        [PRINT_MFSR_MSTKERR]          = "发生存储器管理错误，原因：入栈时企图访问不被允许的区域",
-        [PRINT_MFSR_MLSPERR]          = "发生存储器管理错误，原因：惰性保存浮点状态时发生错误",
-        [PRINT_BFSR_IBUSERR]          = "发生总线错误，原因：指令总线错误",
-        [PRINT_BFSR_PRECISERR]        = "发生总线错误，原因：精确的数据总线错误",
-        [PRINT_BFSR_IMPREISERR]       = "发生总线错误，原因：不精确的数据总线错误",
-        [PRINT_BFSR_UNSTKERR]         = "发生总线错误，原因：出栈时发生错误",
-        [PRINT_BFSR_STKERR]           = "发生总线错误，原因：入栈时发生错误",
-        [PRINT_BFSR_LSPERR]           = "发生总线错误，原因：惰性保存浮点状态时发生错误",
-        [PRINT_UFSR_UNDEFINSTR]       = "发生用法错误，原因：企图执行未定义指令",
-        [PRINT_UFSR_INVSTATE]         = "发生用法错误，原因：试图切换到 ARM 状态",
-        [PRINT_UFSR_INVPC]            = "发生用法错误，原因：无效的异常返回码",
-        [PRINT_UFSR_NOCP]             = "发生用法错误，原因：企图执行协处理器指令",
-        [PRINT_UFSR_UNALIGNED]        = "发生用法错误，原因：企图执行非对齐访问",
-        [PRINT_UFSR_DIVBYZERO0]       = "发生用法错误，原因：企图执行除 0 操作",
-        [PRINT_DFSR_HALTED]           = "发生调试错误，原因：NVIC 停机请求",
-        [PRINT_DFSR_BKPT]             = "发生调试错误，原因：执行 BKPT 指令",
-        [PRINT_DFSR_DWTTRAP]          = "发生调试错误，原因：数据监测点匹配",
-        [PRINT_DFSR_VCATCH]           = "发生调试错误，原因：发生向量捕获",
-        [PRINT_DFSR_EXTERNAL]         = "发生调试错误，原因：外部调试请求",
-        [PRINT_MMAR]                  = "发生存储器管理错误的地址：%08x",
-        [PRINT_BFAR]                  = "发生总线错误的地址：%08x",
+    #include "Languages/zh-CN/cmb_zh_CN.h"
+#elif (CMB_PRINT_LANGUAGE == CMB_PRINT_LANGUAGE_CHINESE_UTF8)
+    #include "Languages/zh-CN/cmb_zh_CN_UTF8.h"
 #else
     #error "CMB_PRINT_LANGUAGE defined error in 'cmb_cfg.h'"
 #endif
@@ -199,7 +130,8 @@ static bool on_fault = false;
 static bool stack_is_overflow = false;
 static struct cmb_hard_fault_regs regs;
 
-#if (CMB_CPU_PLATFORM_TYPE == CMB_CPU_ARM_CORTEX_M4) || (CMB_CPU_PLATFORM_TYPE == CMB_CPU_ARM_CORTEX_M7)
+#if (CMB_CPU_PLATFORM_TYPE == CMB_CPU_ARM_CORTEX_M4) || (CMB_CPU_PLATFORM_TYPE == CMB_CPU_ARM_CORTEX_M7) || \
+    (CMB_CPU_PLATFORM_TYPE == CMB_CPU_ARM_CORTEX_M33)
 static bool statck_has_fpu_regs = false;
 #endif
 
@@ -213,7 +145,7 @@ void cm_backtrace_init(const char *firmware_name, const char *hardware_ver, cons
     strncpy(hw_ver, hardware_ver, CMB_NAME_MAX);
     strncpy(sw_ver, software_ver, CMB_NAME_MAX);
 
-#if defined(__CC_ARM)
+#if defined(__CC_ARM) || defined(__CLANG_ARM)
     main_stack_start_addr = (uint32_t)&CSTACK_BLOCK_START(CMB_CSTACK_BLOCK_NAME);
     main_stack_size = (uint32_t)&CSTACK_BLOCK_END(CMB_CSTACK_BLOCK_NAME) - main_stack_start_addr;
     code_start_addr = (uint32_t)&CODE_SECTION_START(CMB_CODE_SECTION_NAME);
@@ -408,7 +340,7 @@ size_t cm_backtrace_call_stack(uint32_t *buffer, size_t size, uint32_t sp) {
         }
         /* fix the PC address in thumb mode */
         pc = *((uint32_t *) sp) - 1;
-        if ((pc >= code_start_addr) && (pc <= code_start_addr + code_size) && (depth < CMB_CALL_STACK_MAX_DEPTH)
+        if ((pc >= code_start_addr + sizeof(size_t)) && (pc <= code_start_addr + code_size) && (depth < CMB_CALL_STACK_MAX_DEPTH)
                 /* check the the instruction before PC address is 'BL' or 'BLX' */
                 && disassembly_ins_is_bl_blx(pc - sizeof(size_t)) && (depth < size)) {
             /* the second depth function may be already saved, so need ignore repeat */
@@ -434,7 +366,7 @@ static void print_call_stack(uint32_t sp) {
     cur_depth = cm_backtrace_call_stack(call_stack_buf, CMB_CALL_STACK_MAX_DEPTH, sp);
 
     for (i = 0; i < cur_depth; i++) {
-        sprintf(call_stack_info + i * (8 + 1), "%08lx", call_stack_buf[i]);
+        sprintf(call_stack_info + i * (8 + 1), "%08lx", (unsigned long)call_stack_buf[i]);
         call_stack_info[i * (8 + 1) + 8] = ' ';
     }
 
@@ -518,7 +450,8 @@ static void fault_diagnosis(void) {
                 cmb_println(print_info[PRINT_MFSR_MSTKERR]);
             }
 
-#if (CMB_CPU_PLATFORM_TYPE == CMB_CPU_ARM_CORTEX_M4) || (CMB_CPU_PLATFORM_TYPE == CMB_CPU_ARM_CORTEX_M7)
+#if (CMB_CPU_PLATFORM_TYPE == CMB_CPU_ARM_CORTEX_M4) || (CMB_CPU_PLATFORM_TYPE == CMB_CPU_ARM_CORTEX_M7) || \
+    (CMB_CPU_PLATFORM_TYPE == CMB_CPU_ARM_CORTEX_M33)
             if (regs.mfsr.bits.MLSPERR) {
                 cmb_println(print_info[PRINT_MFSR_MLSPERR]);
             }
@@ -548,7 +481,8 @@ static void fault_diagnosis(void) {
                 cmb_println(print_info[PRINT_BFSR_STKERR]);
             }
 
-#if (CMB_CPU_PLATFORM_TYPE == CMB_CPU_ARM_CORTEX_M4) || (CMB_CPU_PLATFORM_TYPE == CMB_CPU_ARM_CORTEX_M7)
+#if (CMB_CPU_PLATFORM_TYPE == CMB_CPU_ARM_CORTEX_M4) || (CMB_CPU_PLATFORM_TYPE == CMB_CPU_ARM_CORTEX_M7) || \
+    (CMB_CPU_PLATFORM_TYPE == CMB_CPU_ARM_CORTEX_M33)
             if (regs.bfsr.bits.LSPERR) {
                 cmb_println(print_info[PRINT_BFSR_LSPERR]);
             }
@@ -575,6 +509,11 @@ static void fault_diagnosis(void) {
             if (regs.ufsr.bits.NOCP) {
                 cmb_println(print_info[PRINT_UFSR_NOCP]);
             }
+#if (CMB_CPU_PLATFORM_TYPE == CMB_CPU_ARM_CORTEX_M33)
+            if (regs.ufsr.bits.STKOF) {
+                cmb_println(print_info[PRINT_UFSR_STKOF]);
+            }
+#endif
             if (regs.ufsr.bits.UNALIGNED) {
                 cmb_println(print_info[PRINT_UFSR_UNALIGNED]);
             }
@@ -606,7 +545,8 @@ static void fault_diagnosis(void) {
 }
 #endif /* (CMB_CPU_PLATFORM_TYPE != CMB_CPU_ARM_CORTEX_M0) */
 
-#if (CMB_CPU_PLATFORM_TYPE == CMB_CPU_ARM_CORTEX_M4) || (CMB_CPU_PLATFORM_TYPE == CMB_CPU_ARM_CORTEX_M7)
+#if (CMB_CPU_PLATFORM_TYPE == CMB_CPU_ARM_CORTEX_M4) || (CMB_CPU_PLATFORM_TYPE == CMB_CPU_ARM_CORTEX_M7) || \
+    (CMB_CPU_PLATFORM_TYPE == CMB_CPU_ARM_CORTEX_M33)
 static uint32_t statck_del_fpu_regs(uint32_t fault_handler_lr, uint32_t sp) {
     statck_has_fpu_regs = (fault_handler_lr & (1UL << 4)) == 0 ? true : false;
 
@@ -662,7 +602,8 @@ void cm_backtrace_fault(uint32_t fault_handler_lr, uint32_t fault_handler_sp) {
     /* delete saved R0~R3, R12, LR,PC,xPSR registers space */
     stack_pointer += sizeof(size_t) * 8;
 
-#if (CMB_CPU_PLATFORM_TYPE == CMB_CPU_ARM_CORTEX_M4) || (CMB_CPU_PLATFORM_TYPE == CMB_CPU_ARM_CORTEX_M7)
+#if (CMB_CPU_PLATFORM_TYPE == CMB_CPU_ARM_CORTEX_M4) || (CMB_CPU_PLATFORM_TYPE == CMB_CPU_ARM_CORTEX_M7) || \
+    (CMB_CPU_PLATFORM_TYPE == CMB_CPU_ARM_CORTEX_M33)
     stack_pointer = statck_del_fpu_regs(fault_handler_lr, stack_pointer);
 #endif /* (CMB_CPU_PLATFORM_TYPE == CMB_CPU_ARM_CORTEX_M4) || (CMB_CPU_PLATFORM_TYPE == CMB_CPU_ARM_CORTEX_M7) */
 

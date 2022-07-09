@@ -216,6 +216,12 @@ void cm_backtrace_fault(uint32_t fault_handler_lr, uint32_t fault_handler_sp)
 - 1、在 `cmb_cfg.h` 中重新定义主栈的信息，此时 CmBacktrace 会优先使用 `cmb_cfg.h` 中的配置信息；
 - 2、修改项目配置，如果是 Keil-MDK ，则在启动文件的开头位置，将主栈的名称修改为默认的 `STACK` ，其他编译器一般很少出现该问题。
 
-### 2.6 许可
+
+### 2.6 视频讲解
+- https://www.bilibili.com/video/BV1LB4y1Q78a
+- https://www.bilibili.com/video/BV1uF411i7Ka
+- https://www.bilibili.com/video/BV1rb4y1474Y
+
+### 2.7 许可
 
 采用 MIT 开源协议，细节请阅读项目中的 LICENSE 文件内容。

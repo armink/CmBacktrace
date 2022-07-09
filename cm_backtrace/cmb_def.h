@@ -62,7 +62,7 @@
 #endif
 
 
-#if defined(__CC_ARM) || defined(__CLANG_ARM)
+#if defined(__ARMCC_VERSION)
     /* C stack block name, default is STACK */
     #ifndef CMB_CSTACK_BLOCK_NAME
     #define CMB_CSTACK_BLOCK_NAME          STACK
@@ -301,7 +301,7 @@ if (!(EXPR))                                                                   \
 }
 
 /* ELF(Executable and Linking Format) file extension name for each compiler */
-#if defined(__CC_ARM) || defined(__CLANG_ARM)
+#if defined(__ARMCC_VERSION)
     #define CMB_ELF_FILE_EXTENSION_NAME          ".axf"
 #elif defined(__ICCARM__)
     #define CMB_ELF_FILE_EXTENSION_NAME          ".out"
@@ -355,7 +355,7 @@ if (!(EXPR))                                                                   \
         mov r0, sp
         bx lr
     }
-#elif defined(__CLANG_ARM)
+#elif defined(__clang__)
     __attribute__( (always_inline) ) static __inline uint32_t cmb_get_msp(void) {
         uint32_t result;
         __asm volatile ("mrs %0, msp" : "=r" (result) );

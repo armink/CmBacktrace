@@ -207,6 +207,10 @@ static void get_cur_thread_stack_info(uint32_t sp, uint32_t *start_addr, size_t 
 #elif (CMB_OS_PLATFORM_TYPE == CMB_OS_PLATFORM_FREERTOS)   
     *start_addr = (uint32_t)vTaskStackAddr();
     *size = vTaskStackSize() * sizeof( StackType_t );
+#elif (CMB_OS_PLATFORM_TYPE == CMB_OS_PLATFORM_RTX5)
+	osRtxThread_t *thread = osRtxInfo.thread.run.curr;
+	*start_addr = (uint32_t)thread->stack_mem;
+	*size = thread->stack_size;
 #endif
 }
 
@@ -231,6 +235,9 @@ static const char *get_cur_thread_name(void) {
     return (const char *)OSTCBCurPtr->NamePtr;
 #elif (CMB_OS_PLATFORM_TYPE == CMB_OS_PLATFORM_FREERTOS)
     return vTaskName();
+#elif (CMB_OS_PLATFORM_TYPE == CMB_OS_PLATFORM_RTX5)
+	osThreadId_t id = osThreadGetId();
+	return osThreadGetName(id);
 #endif
 }
 
@@ -371,7 +378,8 @@ static void print_call_stack(uint32_t sp) {
     }
 
     if (cur_depth) {
-        cmb_println(print_info[PRINT_CALL_STACK_INFO], fw_name, CMB_ELF_FILE_EXTENSION_NAME, cur_depth * (8 + 1),
+		call_stack_info[cur_depth * (8 + 1) - 1] = '\0';
+        cmb_println(print_info[PRINT_CALL_STACK_INFO], fw_name, CMB_ELF_FILE_EXTENSION_NAME,
                 call_stack_info);
     } else {
         cmb_println(print_info[PRINT_CALL_STACK_ERR]);

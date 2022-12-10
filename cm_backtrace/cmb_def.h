@@ -47,6 +47,7 @@
 #define CMB_OS_PLATFORM_UCOSIII           2
 #define CMB_OS_PLATFORM_FREERTOS          3
 #define CMB_OS_PLATFORM_RTX5              4
+#define CMB_OS_PLATFORM_ONEOS             5
 
 #define CMB_PRINT_LANGUAGE_ENGLISH        0
 #define CMB_PRINT_LANGUAGE_CHINESE        1
@@ -333,12 +334,16 @@ if (!(EXPR))                                                                   \
     #elif (CMB_OS_PLATFORM_TYPE == CMB_OS_PLATFORM_UCOSIII)
         #include <os.h>
     #elif (CMB_OS_PLATFORM_TYPE == CMB_OS_PLATFORM_FREERTOS)
-        #include <FreeRTOS.h>  
+        #include <FreeRTOS.h>
         extern uint32_t *vTaskStackAddr(void);/* need to modify the FreeRTOS/tasks source code */
         extern uint32_t vTaskStackSize(void);
         extern char * vTaskName(void);
     #elif (CMB_OS_PLATFORM_TYPE == CMB_OS_PLATFORM_RTX5)
         #include "rtx_os.h"
+    #elif (CMB_OS_PLATFORM_TYPE == CMB_OS_PLATFORM_ONEOS)
+        #include <os_types.h>
+        #include <os_task.h>
+        #include <os_util.h>
     #else
         #error "not supported OS type"
     #endif /* (CMB_OS_PLATFORM_TYPE == CMB_OS_PLATFORM_RTT) */
@@ -376,24 +381,24 @@ if (!(EXPR))                                                                   \
     }
 #elif defined(__ICCARM__)
 /* IAR iccarm specific functions */
-/* Close Raw Asm Code Warning */  
-#pragma diag_suppress=Pe940    
+/* Close Raw Asm Code Warning */
+#pragma diag_suppress=Pe940
     static uint32_t cmb_get_msp(void)
     {
       __asm("mrs r0, msp");
-      __asm("bx lr");        
+      __asm("bx lr");
     }
     static uint32_t cmb_get_psp(void)
     {
       __asm("mrs r0, psp");
-      __asm("bx lr");        
+      __asm("bx lr");
     }
     static uint32_t cmb_get_sp(void)
     {
       __asm("mov r0, sp");
-      __asm("bx lr");       
+      __asm("bx lr");
     }
-#pragma diag_default=Pe940  
+#pragma diag_default=Pe940
 #elif defined(__GNUC__)
     __attribute__( ( always_inline ) ) static inline uint32_t cmb_get_msp(void) {
         register uint32_t result;

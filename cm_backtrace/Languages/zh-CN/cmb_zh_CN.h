@@ -36,7 +36,7 @@
 [PRINT_MAIN_STACK_INFO]       = "============ 主堆栈信息 ============",
 [PRINT_THREAD_STACK_OVERFLOW] = "错误：线程栈(%08x)发生溢出",
 [PRINT_MAIN_STACK_OVERFLOW]   = "错误：主栈(%08x)发生溢出",
-[PRINT_CALL_STACK_INFO]       = "查看更多函数调用栈信息，请运行：addr2line -e %s%s -a -f %s",
+[PRINT_CALL_STACK_INFO]       = "查看更多函数调用栈信息，请运行：addr2line -e %s%s -afpiC %.*s",
 [PRINT_CALL_STACK_ERR]        = "获取函数调用栈失败",
 [PRINT_FAULT_ON_THREAD]       =  "在线程(%s)中发生错误异常",
 [PRINT_FAULT_ON_HANDLER]      = "在中断或裸机环境下发生错误异常",

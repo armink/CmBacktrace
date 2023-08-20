@@ -36,7 +36,7 @@
 [PRINT_MAIN_STACK_INFO]       = "====== Main stack information ======",
 [PRINT_THREAD_STACK_OVERFLOW] = "Error: Thread stack(%08x) was overflow",
 [PRINT_MAIN_STACK_OVERFLOW]   = "Error: Main stack(%08x) was overflow",
-[PRINT_CALL_STACK_INFO]       = "Show more call stack info by run: addr2line -e %s%s -a -f %s",
+[PRINT_CALL_STACK_INFO]       = "Show more call stack info by run: addr2line -e %s%s -afpiC %.*s",
 [PRINT_CALL_STACK_ERR]        = "Dump call stack has an error",
 [PRINT_FAULT_ON_THREAD]       = "Fault on thread %s",
 [PRINT_FAULT_ON_HANDLER]      = "Fault on interrupt or bare metal(no OS) environment",

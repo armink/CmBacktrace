@@ -220,7 +220,11 @@ static void get_cur_thread_stack_info(uint32_t *sp, uint32_t *start_addr, size_t
  */
 static const char *get_cur_thread_name(void) {
 #if (CMB_OS_PLATFORM_TYPE == CMB_OS_PLATFORM_RTT)
+#if (RT_VER_NUM < 0x50001)
     return rt_thread_self()->name;
+#else
+    return rt_thread_self()->parent.name;
+#endif
 #elif (CMB_OS_PLATFORM_TYPE == CMB_OS_PLATFORM_UCOSII)
     extern OS_TCB *OSTCBCur;
 

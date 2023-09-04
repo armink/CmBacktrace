@@ -112,6 +112,8 @@ static const char * const print_info[] = {
     #include "Languages/zh-CN/cmb_zh_CN.h"
 #elif (CMB_PRINT_LANGUAGE == CMB_PRINT_LANGUAGE_CHINESE_UTF8)
     #include "Languages/zh-CN/cmb_zh_CN_UTF8.h"
+#elif (CMB_PRINT_LANGUAGE == CMB_PRINT_LANGUAGE_CUSTOM)
+    #include "cmb_language_custom.h"
 #else
     #error "CMB_PRINT_LANGUAGE defined error in 'cmb_cfg.h'"
 #endif

@@ -51,6 +51,7 @@
 #define CMB_PRINT_LANGUAGE_ENGLISH        0
 #define CMB_PRINT_LANGUAGE_CHINESE        1
 #define CMB_PRINT_LANGUAGE_CHINESE_UTF8   2
+#define CMB_PRINT_LANGUAGE_CUSTOM         0xFF
 
 /* name max length, default size: 32 */
 #ifndef CMB_NAME_MAX

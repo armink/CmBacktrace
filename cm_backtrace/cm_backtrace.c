@@ -243,8 +243,7 @@ static const char *get_cur_thread_name(void) {
 #elif (CMB_OS_PLATFORM_TYPE == CMB_OS_PLATFORM_FREERTOS)
     return vTaskName();
 #elif (CMB_OS_PLATFORM_TYPE == CMB_OS_PLATFORM_RTX5)
-    osThreadId_t id = osThreadGetId();
-    return osThreadGetName(id);
+    return osRtxInfo.thread.run.curr->name;
 #endif
 }
 

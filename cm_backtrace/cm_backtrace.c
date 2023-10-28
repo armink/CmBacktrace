@@ -208,8 +208,9 @@ static void get_cur_thread_stack_info(uint32_t *sp, uint32_t *start_addr, size_t
     *start_addr = (uint32_t) OSTCBCurPtr->StkBasePtr;
     *size = OSTCBCurPtr->StkSize * sizeof(CPU_STK_SIZE);
 #elif (CMB_OS_PLATFORM_TYPE == CMB_OS_PLATFORM_FREERTOS)
-    *start_addr = (uint32_t)vTaskStackAddr();
-    *size = vTaskStackSize() * sizeof( StackType_t );
+    tskTCB_t * task_handle = (tskTCB_t *)xTaskGetCurrentTaskHandle();
+    *start_addr = (StackType_t)task_handle->pxStack;
+    *size = (StackType_t)task_handle - (StackType_t)task_handle->pxStack - 4 * sizeof(StackType_t);
 #elif (CMB_OS_PLATFORM_TYPE == CMB_OS_PLATFORM_RTX5)
     osRtxThread_t *thread = osRtxInfo.thread.run.curr;
     *start_addr = (uint32_t)thread->stack_mem;
@@ -241,7 +242,8 @@ static const char *get_cur_thread_name(void) {
 
     return (const char *)OSTCBCurPtr->NamePtr;
 #elif (CMB_OS_PLATFORM_TYPE == CMB_OS_PLATFORM_FREERTOS)
-    return vTaskName();
+    tskTCB_t * task_handle = (tskTCB_t *)xTaskGetCurrentTaskHandle();
+    return task_handle->pcTaskName;
 #elif (CMB_OS_PLATFORM_TYPE == CMB_OS_PLATFORM_RTX5)
     return osRtxInfo.thread.run.curr->name;
 #endif

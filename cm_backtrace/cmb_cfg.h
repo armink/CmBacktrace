@@ -29,6 +29,9 @@
 #ifndef _CMB_CFG_H_
 #define _CMB_CFG_H_
 
+#ifdef	CMB_USER_CFG
+#include "cmb_user_cfg.h"
+#else
 /* print line, must config by user */
 #define cmb_println(...)               /* e.g., printf(__VA_ARGS__);printf("\r\n")  or  SEGGER_RTT_printf(0, __VA_ARGS__);SEGGER_RTT_WriteString(0, "\r\n")  */
 /* enable bare metal(no OS) platform */
@@ -43,4 +46,6 @@
 /* #define CMB_USING_DUMP_STACK_INFO */
 /* language of print information */
 /* #define CMB_PRINT_LANGUAGE             CMB_PRINT_LANGUAGE_ENGLISH(default) or CMB_PRINT_LANGUAGE_CHINESE or CMB_PRINT_LANGUAGE_CHINESE_UTF8 */
+#endif
+
 #endif /* _CMB_CFG_H_ */

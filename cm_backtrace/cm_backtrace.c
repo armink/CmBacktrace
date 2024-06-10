@@ -119,9 +119,12 @@ static const char * const print_info[] = {
 #endif
 };
 
+#ifdef CMB_USING_FIRMWARE_INFO
 static char fw_name[CMB_NAME_MAX + 1] = {0};
 static char hw_ver[CMB_NAME_MAX + 1] = {0};
 static char sw_ver[CMB_NAME_MAX + 1] = {0};
+#endif
+
 static uint32_t main_stack_start_addr = 0;
 static size_t main_stack_size = 0;
 static uint32_t code_start_addr = 0;
@@ -143,9 +146,11 @@ static bool on_thread_before_fault = false;
  * library initialize
  */
 void cm_backtrace_init(const char *firmware_name, const char *hardware_ver, const char *software_ver) {
+#ifdef CMB_USING_FIRMWARE_INFO
     strncpy(fw_name, firmware_name, CMB_NAME_MAX);
     strncpy(hw_ver, hardware_ver, CMB_NAME_MAX);
     strncpy(sw_ver, software_ver, CMB_NAME_MAX);
+#endif
 
 #if defined(__ARMCC_VERSION)
     main_stack_start_addr = (uint32_t)&CSTACK_BLOCK_START(CMB_CSTACK_BLOCK_NAME);
@@ -174,12 +179,14 @@ void cm_backtrace_init(const char *firmware_name, const char *hardware_ver, cons
     init_ok = true;
 }
 
+#ifdef CMB_USING_FIRMWARE_INFO
 /**
  * print firmware information, such as: firmware name, hardware version, software version
  */
 void cm_backtrace_firmware_info(void) {
     cmb_println(print_info[PRINT_FIRMWARE_INFO], fw_name, hw_ver, sw_ver);
 }
+#endif
 
 #ifdef CMB_USING_OS_PLATFORM
 /**

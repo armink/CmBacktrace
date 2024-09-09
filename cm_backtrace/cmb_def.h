@@ -47,6 +47,7 @@
 #define CMB_OS_PLATFORM_UCOSIII           2
 #define CMB_OS_PLATFORM_FREERTOS          3
 #define CMB_OS_PLATFORM_RTX5              4
+#define CMB_OS_PLATFORM_THREADX           5
 
 #define CMB_PRINT_LANGUAGE_ENGLISH        0
 #define CMB_PRINT_LANGUAGE_CHINESE        1
@@ -348,6 +349,9 @@ if (!(EXPR))                                                                   \
         extern char * pcTaskGetName(TaskHandle_t xTaskToQuery);
     #elif (CMB_OS_PLATFORM_TYPE == CMB_OS_PLATFORM_RTX5)
         #include "rtx_os.h"
+    #elif (CMB_OS_PLATFORM_TYPE == CMB_OS_PLATFORM_THREADX)
+        #include "tx_api.h"
+        #include "tx_thread.h"
     #else
         #error "not supported OS type"
     #endif /* (CMB_OS_PLATFORM_TYPE == CMB_OS_PLATFORM_RTT) */

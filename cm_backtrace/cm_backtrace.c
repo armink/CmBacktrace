@@ -221,6 +221,11 @@ static void get_cur_thread_stack_info(uint32_t *sp, uint32_t *start_addr, size_t
     osRtxThread_t *thread = osRtxInfo.thread.run.curr;
     *start_addr = (uint32_t)thread->stack_mem;
     *size = thread->stack_size;
+#elif  (CMB_OS_PLATFORM_TYPE == CMB_OS_PLATFORM_THREADX)
+    TX_THREAD * ptThread = NULL;
+    TX_THREAD_GET_CURRENT(ptThread);
+    *start_addr = (uint32_t)ptThread->tx_thread_stack_start;
+    *size = ptThread->tx_thread_stack_size;
 #endif
 }
 
@@ -252,6 +257,10 @@ static const char *get_cur_thread_name(void) {
     return (const char *)taskName;
 #elif (CMB_OS_PLATFORM_TYPE == CMB_OS_PLATFORM_RTX5)
     return osRtxInfo.thread.run.curr->name;
+#elif (CMB_OS_PLATFORM_TYPE == CMB_OS_PLATFORM_THREADX)
+    TX_THREAD * ptThread = NULL;
+    TX_THREAD_GET_CURRENT(ptThread);
+    return ptThread->tx_thread_name;
 #endif
 }
 

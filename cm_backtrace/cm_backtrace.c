@@ -182,6 +182,12 @@ void cm_backtrace_firmware_info(void) {
 }
 
 #ifdef CMB_USING_OS_PLATFORM
+
+#if (CMB_OS_PLATFORM_TYPE == CMB_OS_PLATFORM_FREERTOS)
+uint32_t ft_start_addr;
+size_t ft_size;
+#endif
+
 /**
  * Get current thread stack information
  *
@@ -208,8 +214,9 @@ static void get_cur_thread_stack_info(uint32_t *sp, uint32_t *start_addr, size_t
     *start_addr = (uint32_t) OSTCBCurPtr->StkBasePtr;
     *size = OSTCBCurPtr->StkSize * sizeof(CPU_STK_SIZE);
 #elif (CMB_OS_PLATFORM_TYPE == CMB_OS_PLATFORM_FREERTOS)
-    *start_addr = (uint32_t)vTaskStackAddr();
-    *size = vTaskStackSize() * sizeof( StackType_t );
+    xTaskGetCurrentTaskHandle();
+    *start_addr = (uint32_t) ft_start_addr;
+    *size = (size_t) ft_size;
 #elif (CMB_OS_PLATFORM_TYPE == CMB_OS_PLATFORM_RTX5)
     osRtxThread_t *thread = osRtxInfo.thread.run.curr;
     *start_addr = (uint32_t)thread->stack_mem;
@@ -246,7 +253,8 @@ static const char *get_cur_thread_name(void) {
 
     return (const char *)OSTCBCurPtr->NamePtr;
 #elif (CMB_OS_PLATFORM_TYPE == CMB_OS_PLATFORM_FREERTOS)
-    return vTaskName();
+    char *taskName = pcTaskGetName(NULL);
+    return (const char *)taskName;
 #elif (CMB_OS_PLATFORM_TYPE == CMB_OS_PLATFORM_RTX5)
     return osRtxInfo.thread.run.curr->name;
 #elif (CMB_OS_PLATFORM_TYPE == CMB_OS_PLATFORM_THREADX)

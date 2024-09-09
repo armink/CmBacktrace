@@ -343,10 +343,10 @@ if (!(EXPR))                                                                   \
     #elif (CMB_OS_PLATFORM_TYPE == CMB_OS_PLATFORM_UCOSIII)
         #include <os.h>
     #elif (CMB_OS_PLATFORM_TYPE == CMB_OS_PLATFORM_FREERTOS)
-        #include <FreeRTOS.h>  
-        extern uint32_t *vTaskStackAddr(void);/* need to modify the FreeRTOS/tasks source code */
-        extern uint32_t vTaskStackSize(void);
-        extern char * vTaskName(void);
+        #include <FreeRTOS.h>
+        #include "task.h"
+        extern TaskHandle_t xTaskGetCurrentTaskHandle(void);
+        extern char * pcTaskGetName(TaskHandle_t xTaskToQuery);
     #elif (CMB_OS_PLATFORM_TYPE == CMB_OS_PLATFORM_RTX5)
         #include "rtx_os.h"
     #elif (CMB_OS_PLATFORM_TYPE == CMB_OS_PLATFORM_THREADX)
@@ -425,6 +425,19 @@ if (!(EXPR))                                                                   \
     }
 #else
     #error "not supported compiler"
+#endif
+
+#if (CMB_OS_PLATFORM_TYPE == CMB_OS_PLATFORM_FREERTOS)
+extern uint32_t ft_start_addr;
+extern size_t ft_size;
+
+#undef traceRETURN_xTaskGetCurrentTaskHandle
+#define traceRETURN_xTaskGetCurrentTaskHandle(xReturn)                                    \
+  {                                                                                       \
+      ft_start_addr = (xReturn != NULL ? (StackType_t)xReturn->pxStack : 0);              \
+      ft_size = (xReturn != NULL ? (StackType_t)xReturn - (StackType_t)xReturn->pxStack - \
+              4 * sizeof(StackType_t) : 0);                                               \
+  }
 #endif
 
 #endif /* _CMB_DEF_H_ */

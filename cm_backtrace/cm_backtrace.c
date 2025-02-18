@@ -657,6 +657,14 @@ void cm_backtrace_fault(uint32_t fault_handler_lr, uint32_t fault_handler_sp) {
     stack_pointer = statck_del_fpu_regs(fault_handler_lr, stack_pointer);
 #endif /* (CMB_CPU_PLATFORM_TYPE == CMB_CPU_ARM_CORTEX_M4) || (CMB_CPU_PLATFORM_TYPE == CMB_CPU_ARM_CORTEX_M7) */
 
+    /*
+     * Was the stack pointer adjusted to ensure 8-byte alignment when the exception was taken?
+     * In that case, bit 9 of stacked xPSR/RETPSR is set.
+     */
+    if (((uint32_t *)saved_regs_addr)[7] & (1UL << 9)) {
+        stack_pointer += 4;
+    }
+
 #ifdef CMB_USING_DUMP_STACK_INFO
     /* check stack overflow */
     if (stack_pointer < stack_start_addr || stack_pointer > stack_start_addr + stack_size) {

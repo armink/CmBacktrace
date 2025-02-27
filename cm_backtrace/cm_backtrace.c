@@ -26,7 +26,7 @@
  * Created on: 2016-12-15
  */
 
-#include <cm_backtrace.h>
+#include "cm_backtrace.h"
 #include <stdbool.h>
 #include <string.h>
 #include <stdio.h>
@@ -167,7 +167,7 @@ void cm_backtrace_init(const char *firmware_name, const char *hardware_ver, cons
 #endif
 
     if (main_stack_size == 0) {
-        cmb_println(print_info[PRINT_MAIN_STACK_CFG_ERROR]);
+        cmb_println("%s", print_info[PRINT_MAIN_STACK_CFG_ERROR]);
         return;
     }
 
@@ -277,9 +277,9 @@ static void dump_stack(uint32_t stack_start_addr, size_t stack_size, uint32_t *s
             stack_pointer = (uint32_t *) (stack_start_addr + stack_size);
         }
     }
-    cmb_println(print_info[PRINT_THREAD_STACK_INFO]);
+    cmb_println("%s", print_info[PRINT_THREAD_STACK_INFO]);
     for (; (uint32_t) stack_pointer < stack_start_addr + stack_size && deep; stack_pointer++, deep--) {
-        cmb_println("  addr: %08x    data: %08x", stack_pointer, *stack_pointer);
+        cmb_println("  addr: %08x    data: %08x", (uint32_t) stack_pointer, *stack_pointer);
     }
     cmb_println("====================================");
 }
@@ -423,7 +423,7 @@ static void print_call_stack(uint32_t sp) {
         cmb_println(print_info[PRINT_CALL_STACK_INFO], fw_name, CMB_ELF_FILE_EXTENSION_NAME, cur_depth * (8 + 1),
                 call_stack_info);
     } else {
-        cmb_println(print_info[PRINT_CALL_STACK_ERR]);
+        cmb_println("%s", print_info[PRINT_CALL_STACK_ERR]);
     }
 }
 
@@ -646,7 +646,7 @@ void cm_backtrace_fault(uint32_t fault_handler_lr, uint32_t fault_handler_sp) {
     }
 #else
     /* bare metal(no OS) environment */
-    cmb_println(print_info[PRINT_FAULT_ON_HANDLER]);
+    cmb_println("%s", print_info[PRINT_FAULT_ON_HANDLER]);
 #endif /* CMB_USING_OS_PLATFORM */
 
     /* delete saved R0~R3, R12, LR,PC,xPSR registers space */
@@ -684,7 +684,7 @@ void cm_backtrace_fault(uint32_t fault_handler_lr, uint32_t fault_handler_sp) {
 
     {
         /* dump register */
-        cmb_println(print_info[PRINT_REGS_TITLE]);
+        cmb_println("%s", print_info[PRINT_REGS_TITLE]);
 
         regs.saved.r0        = ((uint32_t *)saved_regs_addr)[0];  // Register R0
         regs.saved.r1        = ((uint32_t *)saved_regs_addr)[1];  // Register R1

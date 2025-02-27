@@ -46,6 +46,8 @@
 /* #define CMB_USING_DUMP_STACK_INFO */
 /* language of print information */
 /* #define CMB_PRINT_LANGUAGE             CMB_PRINT_LANGUAGE_ENGLISH(default) or CMB_PRINT_LANGUAGE_CHINESE or CMB_PRINT_LANGUAGE_CHINESE_UTF8 */
+/* disable storing and printing firmware information */
+/* #define CMB_NOT_USING_FIRMWARE_INFO */
 #endif
 
 #endif /* _CMB_CFG_H_ */

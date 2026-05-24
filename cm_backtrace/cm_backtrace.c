@@ -366,11 +366,12 @@ size_t cm_backtrace_call_stack(uint32_t *buffer, size_t size, uint32_t sp) {
         if (on_thread_before_fault) {
             get_cur_thread_stack_info(&tcb_sp, &stack_start_addr, &stack_size);
         }
-    } else {
+     else {
         /* OS environment */
         if (cmb_get_sp() == cmb_get_psp()) {
             get_cur_thread_stack_info(&tcb_sp, &stack_start_addr, &stack_size);
         }
+}
 #endif /* CMB_USING_OS_PLATFORM */
 
     }

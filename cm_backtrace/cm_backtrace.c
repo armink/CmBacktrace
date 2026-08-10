@@ -139,6 +139,24 @@ static bool statck_has_fpu_regs = false;
 
 static bool on_thread_before_fault = false;
 
+#ifdef CMB_USING_USER_CODE_SECTION
+/* multiple code segments support: Flash code + user-defined code regions.
+   cm_backtrace_init() fills this table from the Flash region (CMB_CODE_SECTION_NAME)
+   plus the user-defined code sections (CMB_USER_CODE_SECTIONS). */
+typedef struct {
+    uint32_t start;   /* code region base address (inclusive) */
+    uint32_t end;     /* code region end address (inclusive)  */
+} cmb_code_region_t;
+
+static cmb_code_region_t code_regions[CMB_CODE_REGION_MAX] = { { 0, 0 } };
+static uint8_t code_region_cnt = 0;
+
+#ifdef CMB_USER_CODE_SECTIONS
+/* user-defined additional code regions, configured in cmb_cfg.h (const array) */
+static const cmb_code_region_t user_code_sections[] = CMB_USER_CODE_SECTIONS;
+#endif /* CMB_USER_CODE_SECTIONS */
+#endif /* CMB_USING_USER_CODE_SECTION */
+
 /**
  * library initialize
  */
@@ -165,6 +183,28 @@ void cm_backtrace_init(const char *firmware_name, const char *hardware_ver, cons
 #else
     #error "not supported compiler"
 #endif
+
+#ifdef CMB_USING_USER_CODE_SECTION
+    /* fill code region table: Flash code region first, then user-defined regions */
+    code_region_cnt = 0;
+    if (code_size != 0) {
+        code_regions[code_region_cnt].start = code_start_addr;
+        code_regions[code_region_cnt].end   = code_start_addr + code_size;
+        code_region_cnt++;
+    }
+#ifdef CMB_USER_CODE_SECTIONS
+    {
+        size_t i, n = sizeof(user_code_sections) / sizeof(user_code_sections[0]);
+        for (i = 0; i < n; i++) {
+            if ((code_region_cnt < CMB_CODE_REGION_MAX) && (user_code_sections[i].start < user_code_sections[i].end)) {
+                code_regions[code_region_cnt].start = user_code_sections[i].start;
+                code_regions[code_region_cnt].end   = user_code_sections[i].end;
+                code_region_cnt++;
+            }
+        }
+    }
+#endif /* CMB_USER_CODE_SECTIONS */
+#endif /* CMB_USING_USER_CODE_SECTION */
 
     if (main_stack_size == 0) {
         cmb_println(print_info[PRINT_MAIN_STACK_CFG_ERROR]);
@@ -305,6 +345,31 @@ static bool disassembly_ins_is_bl_blx(uint32_t addr) {
     }
 }
 
+#ifdef CMB_USING_USER_CODE_SECTION
+/* check whether pc falls in any code region (Flash code or user-defined code) */
+static bool cmb_pc_in_code(uint32_t pc) {
+    uint8_t i;
+    for (i = 0; i < code_region_cnt; i++) {
+        if ((pc >= code_regions[i].start) && (pc <= code_regions[i].end)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+/* check whether pc falls in any code region, skipping the first word of each region
+   to reduce false positives (the existing Flash-only check used the same bias) */
+static bool cmb_pc_in_code_skip_first(uint32_t pc) {
+    uint8_t i;
+    for (i = 0; i < code_region_cnt; i++) {
+        if ((pc >= code_regions[i].start + sizeof(size_t)) && (pc <= code_regions[i].end)) {
+            return true;
+        }
+    }
+    return false;
+}
+#endif /* CMB_USING_USER_CODE_SECTION */
+
 size_t cm_backtrace_call_stack_any(uint32_t *buffer, size_t size, uint32_t sp, uint32_t stack_start_addr, uint32_t stack_size)
 {
     uint32_t pc;
@@ -319,7 +384,11 @@ size_t cm_backtrace_call_stack_any(uint32_t *buffer, size_t size, uint32_t sp, u
         }
         /* fix the PC address in thumb mode */
         pc = *((uint32_t *) sp) - 1;
+#ifdef CMB_USING_USER_CODE_SECTION
+        if (cmb_pc_in_code_skip_first(pc) && (depth < CMB_CALL_STACK_MAX_DEPTH)
+#else
         if ((pc >= code_start_addr + sizeof(size_t)) && (pc <= code_start_addr + code_size) && (depth < CMB_CALL_STACK_MAX_DEPTH)
+#endif
                 /* check the the instruction before PC address is 'BL' or 'BLX' */
                 && disassembly_ins_is_bl_blx(pc - sizeof(size_t)) && (depth < size)) {
             /* the second depth function may be already saved, so need ignore repeat */
@@ -354,7 +423,11 @@ size_t cm_backtrace_call_stack(uint32_t *buffer, size_t size, uint32_t sp) {
             buffer[depth++] = regs.saved.pc;
             /* fix the LR address in thumb mode */
             pc = regs.saved.lr - 1;
+#ifdef CMB_USING_USER_CODE_SECTION
+            if (cmb_pc_in_code(pc) && (depth < CMB_CALL_STACK_MAX_DEPTH)
+#else
             if ((pc >= code_start_addr) && (pc <= code_start_addr + code_size) && (depth < CMB_CALL_STACK_MAX_DEPTH)
+#endif
                     && (depth < size)) {
                 buffer[depth++] = pc;
                 regs_saved_lr_is_valid = true;
@@ -389,7 +462,11 @@ size_t cm_backtrace_call_stack(uint32_t *buffer, size_t size, uint32_t sp) {
         }
         /* fix the PC address in thumb mode */
         pc = *((uint32_t *) sp) - 1;
+#ifdef CMB_USING_USER_CODE_SECTION
+        if (cmb_pc_in_code_skip_first(pc) && (depth < CMB_CALL_STACK_MAX_DEPTH)
+#else
         if ((pc >= code_start_addr + sizeof(size_t)) && (pc <= code_start_addr + code_size) && (depth < CMB_CALL_STACK_MAX_DEPTH)
+#endif
                 /* check the the instruction before PC address is 'BL' or 'BLX' */
                 && disassembly_ins_is_bl_blx(pc - sizeof(size_t)) && (depth < size)) {
             /* the second depth function may be already saved, so need ignore repeat */

@@ -44,6 +44,13 @@
 #define CMB_CPU_PLATFORM_TYPE          /* CMB_CPU_ARM_CORTEX_M0 or CMB_CPU_ARM_CORTEX_M3 or CMB_CPU_ARM_CORTEX_M4 or CMB_CPU_ARM_CORTEX_M7 or CMB_CPU_ARM_CORTEX_M33 */
 /* enable dump stack information */
 /* #define CMB_USING_DUMP_STACK_INFO */
+/* enable user code section backtrace: user-defined code regions beyond Flash */
+/* #define CMB_USING_USER_CODE_SECTION */
+/* additional code regions: a const array initializer of {start, end} pairs, only
+   used when the above switch is ON. Flash (CMB_CODE_SECTION_NAME) is always
+   auto-detected.
+   e.g. ITCM RAM code:  #define CMB_USER_CODE_SECTIONS  { {0x00000008, 0x0000FFFF} } */
+/* #define CMB_USER_CODE_SECTIONS */
 /* language of print information */
 /* #define CMB_PRINT_LANGUAGE             CMB_PRINT_LANGUAGE_ENGLISH(default) or CMB_PRINT_LANGUAGE_CHINESE or CMB_PRINT_LANGUAGE_CHINESE_UTF8 */
 #endif

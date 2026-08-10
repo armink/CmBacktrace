@@ -117,6 +117,11 @@
 #define CMB_DUMP_STACK_DEPTH_SIZE     (16)
 #endif
 
+/* max number of code regions in the backtrace region table (Flash + user-defined), default is 8 */
+#ifndef CMB_CODE_REGION_MAX
+#define CMB_CODE_REGION_MAX           8
+#endif
+
 /* system handler control and state register */
 #ifndef CMB_SYSHND_CTRL
 #define CMB_SYSHND_CTRL                (*(volatile unsigned int*)  (0xE000ED24u))
